@@ -114,11 +114,16 @@ html {
 }
 
 /* ── Mobile ─────────────────────────────────────────────────────────────── */
+/* Short labels hidden by default, shown only on mobile */
+.tab-label-short { display: none; }
+
 @media (max-width: 600px) {
   .header-acts   { display: none !important; }
-  .tab-bar       { width: 100% !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
-  .tab-bar::-webkit-scrollbar { display: none; }
-  .tab-btn       { font-size: 0.8rem !important; padding: 7px 14px !important; white-space: nowrap; }
+  /* Tab bar fills full width, each tab gets equal space */
+  .tab-bar       { width: 100% !important; overflow-x: visible; }
+  .tab-bar .tab-btn { flex: 1 1 0 !important; font-size: 0.72rem !important; padding: 7px 4px !important; white-space: nowrap; text-align: center; }
+  .tab-label-long  { display: none; }
+  .tab-label-short { display: inline; }
   .result-card   { padding: 14px 16px !important; border-radius: 10px !important; }
   .ref-chip      { font-size: 0.72rem !important; }
   .cat-pill      { font-size: 0.74rem !important; padding: 4px 10px !important; }

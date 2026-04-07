@@ -265,13 +265,15 @@ export default function AaykarSetuApp({ data }: Props) {
             className={`tab-btn${activeTab === 'scanner' ? ' active' : ''}`}
             onClick={() => handleTabChange('scanner')}
           >
-            Document Scanner
+            <span className="tab-label-long">Document Scanner</span>
+            <span className="tab-label-short">Scanner</span>
           </button>
           <button
             className={`tab-btn${activeTab === 'ask' ? ' active' : ''}`}
             onClick={() => handleTabChange('ask')}
           >
-            AaykarMitra
+            <span className="tab-label-long">AaykarMitra</span>
+            <span className="tab-label-short">AI Chat</span>
           </button>
         </div>
 
