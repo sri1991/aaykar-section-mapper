@@ -139,7 +139,7 @@ export default function AaykarSetuApp({ data }: Props) {
 
           {/* Acts label + sign out */}
           <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--ink-muted)' }}>
+            <div className="header-acts" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--ink-muted)' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>IT Act 1961</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -234,7 +234,7 @@ export default function AaykarSetuApp({ data }: Props) {
       <main style={{ maxWidth: 900, margin: '0 auto', padding: '24px 20px 60px' }}>
 
         {/* Tabs */}
-        <div style={{
+        <div className="tab-bar" style={{
           display: 'flex',
           gap: 4,
           padding: '4px',
@@ -358,6 +358,8 @@ export default function AaykarSetuApp({ data }: Props) {
         <p style={{ margin: '8px 0 0', color: 'var(--ink-faint)' }}>
           Built by{' '}
           <span style={{ fontWeight: 500, color: 'var(--ink-muted)' }}>MSB Digital Labs</span>
+          {' · '}
+          <a href="/privacy" style={{ color: 'var(--ink-faint)', textDecoration: 'underline' }}>Privacy Policy</a>
         </p>
       </footer>
     </div>

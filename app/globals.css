@@ -23,7 +23,7 @@
 * { box-sizing: border-box; }
 
 html {
-  font-family: var(--font-body);
+  font-family: var(--font-body), 'DM Sans', sans-serif;
   color: var(--ink);
   background: var(--surface-2);
   -webkit-font-smoothing: antialiased;
@@ -111,6 +111,18 @@ html {
   font-weight: 500;
   padding: 3px 10px;
   border-radius: 6px;
+}
+
+/* ── Mobile ─────────────────────────────────────────────────────────────── */
+@media (max-width: 600px) {
+  .header-acts   { display: none !important; }
+  .tab-bar       { width: 100% !important; overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .tab-bar::-webkit-scrollbar { display: none; }
+  .tab-btn       { font-size: 0.8rem !important; padding: 7px 14px !important; white-space: nowrap; }
+  .result-card   { padding: 14px 16px !important; border-radius: 10px !important; }
+  .ref-chip      { font-size: 0.72rem !important; }
+  .cat-pill      { font-size: 0.74rem !important; padding: 4px 10px !important; }
+  .search-input  { font-size: 0.95rem !important; padding: 12px 16px 12px 46px !important; }
 }
 
 @keyframes spin {

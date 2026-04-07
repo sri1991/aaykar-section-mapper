@@ -33,9 +33,10 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl
   const isAuthRoute = pathname.startsWith('/auth')
+  const isPublic = pathname === '/privacy'
 
-  // Everything except /auth/* requires login
-  if (!isAuthRoute && !user) {
+  // Everything except /auth/* and public pages requires login
+  if (!isAuthRoute && !isPublic && !user) {
     const loginUrl = request.nextUrl.clone()
     loginUrl.pathname = '/auth/login'
     loginUrl.searchParams.set('next', pathname)
