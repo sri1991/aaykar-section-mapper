@@ -14,7 +14,7 @@ export interface Section {
   keywords: string[];
 }
 
-export interface TaxForm {
+export interface Form {
   id: string;
   old_form: string;
   old_purpose: string;
@@ -26,6 +26,9 @@ export interface TaxForm {
   structural_changes: string;
   keywords: string[];
 }
+
+// Alias for backwards compatibility
+export type TaxForm = Form;
 
 export interface TerminologyItem {
   old_term: string;

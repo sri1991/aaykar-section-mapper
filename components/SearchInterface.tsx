@@ -2,9 +2,9 @@
 
 import { useState, useCallback, useTransition, useMemo } from "react";
 import type { Section, TaxForm, MappingData } from "@/lib/types";
-import { SectionCard } from "./SectionCard";
-import { FormCard } from "./FormCard";
-import { CategoryFilter } from "./CategoryFilter";
+import SectionCard from "./SectionCard";
+import FormCard from "./FormCard";
+import CategoryFilter from "./CategoryFilter";
 import Fuse from "fuse.js";
 
 type Tab = "sections" | "forms";
@@ -282,7 +282,6 @@ export function SearchInterface({ data }: SearchInterfaceProps) {
         {tab === "sections" && (
           <div style={{ marginBottom: 20 }}>
             <CategoryFilter
-              categories={categories}
               active={category}
               onChange={handleCategoryChange}
               counts={categoryCounts}
@@ -316,8 +315,8 @@ export function SearchInterface({ data }: SearchInterfaceProps) {
         {tab === "sections" ? (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {sectionResults.length > 0 ? (
-              sectionResults.slice(0, 50).map((section) => (
-                <SectionCard key={section.id} section={section} />
+              sectionResults.slice(0, 50).map((section, i) => (
+                <SectionCard key={section.id} section={section} index={i} />
               ))
             ) : (
               <EmptyState query={query} tab={tab} />
@@ -326,8 +325,8 @@ export function SearchInterface({ data }: SearchInterfaceProps) {
         ) : (
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {formResults.length > 0 ? (
-              formResults.map((form) => (
-                <FormCard key={form.id} form={form} />
+              formResults.map((form, i) => (
+                <FormCard key={form.id} form={form} index={i} />
               ))
             ) : (
               <EmptyState query={query} tab={tab} />

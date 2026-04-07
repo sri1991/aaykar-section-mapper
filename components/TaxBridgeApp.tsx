@@ -287,7 +287,7 @@ export default function AaykarSetuApp({ data }: Props) {
         )}
 
         {/* Category filter — sections only */}
-        {activeTab === 'sections' && activeTab !== 'ask' && (
+        {activeTab === 'sections' && (
           <div style={{ margin: '16px 0' }}>
             <CategoryFilter
               active={activeCategory}
