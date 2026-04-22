@@ -12,6 +12,7 @@ import CategoryFilter from './CategoryFilter'
 import StatsBar from './StatsBar'
 import DocumentScanner from './DocumentScanner'
 import AaykarMitra from './AaykarMitra'
+import GapAuditor from './GapAuditor'
 
 interface Props {
   data: MappingData
@@ -20,7 +21,7 @@ interface Props {
 export default function AaykarSetuApp({ data }: Props) {
   const supabase = createClient()
   const [query, setQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'sections' | 'forms' | 'scanner' | 'ask'>('sections')
+  const [activeTab, setActiveTab] = useState<'sections' | 'forms' | 'scanner' | 'ask' | 'gap'>('sections')
   const [activeCategory, setActiveCategory] = useState('All')
 
   // Build Fuse indexes once
@@ -100,7 +101,7 @@ export default function AaykarSetuApp({ data }: Props) {
     if (v.trim().length >= 2) setActiveCategory('All')
   }, [])
 
-  const handleTabChange = useCallback((tab: 'sections' | 'forms' | 'scanner' | 'ask') => {
+  const handleTabChange = useCallback((tab: 'sections' | 'forms' | 'scanner' | 'ask' | 'gap') => {
     setActiveTab(tab)
     setActiveCategory('All')
   }, [])
@@ -275,10 +276,17 @@ export default function AaykarSetuApp({ data }: Props) {
             <span className="tab-label-long">AaykarMitra</span>
             <span className="tab-label-short">AI Chat</span>
           </button>
+          <button
+            className={`tab-btn${activeTab === 'gap' ? ' active' : ''}`}
+            onClick={() => handleTabChange('gap')}
+          >
+            <span className="tab-label-long">Gap Auditor</span>
+            <span className="tab-label-short">Gaps</span>
+          </button>
         </div>
 
-        {/* Stats bar — hidden on scanner and ask tabs */}
-        {activeTab !== 'scanner' && activeTab !== 'ask' && (
+        {/* Stats bar — hidden on scanner, ask, and gap tabs */}
+        {activeTab !== 'scanner' && activeTab !== 'ask' && activeTab !== 'gap' && (
           <StatsBar
             totalSections={data.sections.length}
             totalForms={data.forms.length}
@@ -286,6 +294,23 @@ export default function AaykarSetuApp({ data }: Props) {
             activeTab={activeTab}
             resultCount={activeTab === 'sections' ? filteredSections.length : filteredForms.length}
           />
+        )}
+
+        {/* Gap Auditor intro strip */}
+        {activeTab === 'gap' && (
+          <div style={{
+            padding: '14px 18px',
+            borderRadius: 10,
+            background: 'var(--teal-light)',
+            border: '1px solid #b3ddd7',
+            marginBottom: 20,
+            fontSize: '0.85rem',
+            color: 'var(--teal-dark)',
+            lineHeight: 1.5,
+          }}>
+            <strong>6 questions · 2 minutes · personalised checklist.</strong>{' '}
+            Answer the questions below and get a prioritised list of compliance gaps specific to your situation — each sourced to a CBDT notification or statutory provision.
+          </div>
         )}
 
         {/* Category filter — sections only */}
@@ -300,7 +325,7 @@ export default function AaykarSetuApp({ data }: Props) {
         )}
 
         {/* Disclaimer */}
-        {activeTab !== 'scanner' && activeTab !== 'ask' && (
+        {activeTab !== 'scanner' && activeTab !== 'ask' && activeTab !== 'gap' && (
           <div style={{
             fontSize: '0.72rem',
             color: 'var(--ink-faint)',
@@ -314,8 +339,10 @@ export default function AaykarSetuApp({ data }: Props) {
           </div>
         )}
 
-        {/* Results / Scanner / Ask */}
-        {activeTab === 'ask' ? (
+        {/* Results / Scanner / Ask / Gap */}
+        {activeTab === 'gap' ? (
+          <GapAuditor />
+        ) : activeTab === 'ask' ? (
           <AaykarMitra />
         ) : activeTab === 'scanner' ? (
           <DocumentScanner data={data} />

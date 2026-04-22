@@ -5,11 +5,12 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL ?? ''
 // Strict CSP — adjust if you add new third-party origins
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com;
+  script-src 'self' 'unsafe-inline' blob: ${process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : ''} https://va.vercel-scripts.com https://cdn.jsdelivr.net;
   style-src 'self' 'unsafe-inline';
   font-src 'self';
   img-src 'self' data: https://lh3.googleusercontent.com;
   connect-src 'self'
+    ${process.env.NODE_ENV === 'development' ? 'http://localhost:* ws://localhost:*' : ''}
     ${supabaseUrl}
     https://*.supabase.co
     https://generativelanguage.googleapis.com
@@ -17,6 +18,7 @@ const ContentSecurityPolicy = `
     https://api.cohere.com
     https://api.anthropic.com
     https://va.vercel-scripts.com;
+  worker-src 'self' blob:;
   frame-src https://accounts.google.com;
   frame-ancestors 'none';
   base-uri 'self';
