@@ -119,27 +119,69 @@ export default function AaykarSetuApp({ data }: Props) {
         top: 0,
         zIndex: 50,
       }}>
-        <div style={{ maxWidth: 900, margin: '0 auto', padding: '16px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0, height: 60 }}>
           {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-            <span className="font-display" style={{ fontSize: '1.4rem', color: 'var(--ink)', lineHeight: 1 }}>
+          <button
+            onClick={() => handleTabChange('sections')}
+            style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
+          >
+            <span className="font-display" style={{ fontSize: '1.35rem', color: 'var(--ink)', lineHeight: 1 }}>
               AaykarSetu
             </span>
             <span style={{
-              fontSize: '0.7rem',
+              fontSize: '0.68rem',
               fontWeight: 600,
               padding: '2px 7px',
               borderRadius: 100,
               background: 'var(--saffron-light)',
               color: 'var(--saffron-dark)',
-              letterSpacing: '0.04em',
+              letterSpacing: '0.05em',
             }}>
               FREE
             </span>
-          </div>
+          </button>
 
-          {/* Acts label + sign out */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          {/* Tool nav — pill buttons, visually separated */}
+          <nav style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+            padding: '0 24px',
+            borderLeft: '1px solid var(--border)',
+            borderRight: '1px solid var(--border)',
+            height: '100%',
+          }}>
+            <button
+              className={`nav-tool-btn${activeTab === 'scanner' ? ' active' : ''}`}
+              onClick={() => handleTabChange('scanner')}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+              </svg>
+              <span className="nav-tool-label">Doc Scanner</span>
+            </button>
+            <button
+              className={`nav-tool-btn${activeTab === 'ask' ? ' active' : ''}`}
+              onClick={() => handleTabChange('ask')}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span className="nav-tool-label">AaykarMitra</span>
+            </button>
+            <button
+              className={`nav-tool-btn${activeTab === 'gap' ? ' active' : ''}`}
+              onClick={() => handleTabChange('gap')}
+            >
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
+              </svg>
+              <span className="nav-tool-label">Gap Auditor</span>
+            </button>
+          </nav>
+
+          {/* Right: Acts label + sign out */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
             <div className="header-acts" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--ink-muted)' }}>
               <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>IT Act 1961</span>
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -169,121 +211,106 @@ export default function AaykarSetuApp({ data }: Props) {
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
               </svg>
-              Sign out
+              <span className="nav-tool-label">Sign out</span>
             </button>
           </div>
         </div>
       </header>
 
-      {/* Hero */}
-      <section style={{
-        background: 'linear-gradient(160deg, #fff9f5 0%, var(--surface) 100%)',
-        borderBottom: '1px solid var(--border)',
-        padding: '40px 20px 32px',
-      }}>
-        <div style={{ maxWidth: 900, margin: '0 auto' }}>
-          <div style={{ maxWidth: 680, marginBottom: 28 }}>
-            <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', lineHeight: 1.15, marginBottom: 10, color: 'var(--ink)' }}>
-              Find your section&rsquo;s new home<br />
-              <em style={{ color: 'var(--saffron)' }}>in seconds.</em>
-            </h1>
-            <p style={{ fontSize: '0.95rem', color: 'var(--ink-muted)', lineHeight: 1.6, margin: 0 }}>
-              India&rsquo;s Income Tax Act 2025 is live from April 1, 2026. Every section number has changed.
-              Search any old reference and instantly see what it maps to — with plain-English explanations.
-            </p>
-          </div>
-
-          {/* Search */}
-          <SearchBar value={query} onChange={handleQueryChange} />
-
-          {/* Suggestions */}
-          {!query && (
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
-              <span style={{ fontSize: '0.75rem', color: 'var(--ink-faint)', alignSelf: 'center' }}>Try:</span>
-              {suggestions.map(s => (
-                <button
-                  key={s}
-                  onClick={() => setQuery(s)}
-                  style={{
-                    fontSize: '0.75rem',
-                    padding: '3px 10px',
-                    borderRadius: 100,
-                    border: '1px solid var(--border)',
-                    background: 'var(--surface)',
-                    color: 'var(--ink-muted)',
-                    cursor: 'pointer',
-                    transition: 'all 0.1s',
-                  }}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.borderColor = 'var(--saffron)'
-                    e.currentTarget.style.color = 'var(--saffron-dark)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.borderColor = 'var(--border)'
-                    e.currentTarget.style.color = 'var(--ink-muted)'
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
+      {/* Hero — search mode only */}
+      {(activeTab === 'sections' || activeTab === 'forms') && (
+        <section style={{
+          background: 'linear-gradient(160deg, #fff9f5 0%, var(--surface) 100%)',
+          borderBottom: '1px solid var(--border)',
+          padding: '40px 20px 32px',
+        }}>
+          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
+            <div style={{ maxWidth: 680, marginBottom: 28 }}>
+              <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', lineHeight: 1.15, marginBottom: 10, color: 'var(--ink)' }}>
+                Find your section&rsquo;s new home<br />
+                <em style={{ color: 'var(--saffron)' }}>in seconds.</em>
+              </h1>
+              <p style={{ fontSize: '0.95rem', color: 'var(--ink-muted)', lineHeight: 1.6, margin: 0 }}>
+                India&rsquo;s Income Tax Act 2025 is live from April 1, 2026. Every section number has changed.
+                Search any old reference and instantly see what it maps to — with plain-English explanations.
+              </p>
             </div>
-          )}
-        </div>
-      </section>
+
+            {/* Search */}
+            <SearchBar value={query} onChange={handleQueryChange} />
+
+            {/* Suggestions */}
+            {!query && (
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
+                <span style={{ fontSize: '0.75rem', color: 'var(--ink-faint)', alignSelf: 'center' }}>Try:</span>
+                {suggestions.map(s => (
+                  <button
+                    key={s}
+                    onClick={() => setQuery(s)}
+                    style={{
+                      fontSize: '0.75rem',
+                      padding: '3px 10px',
+                      borderRadius: 100,
+                      border: '1px solid var(--border)',
+                      background: 'var(--surface)',
+                      color: 'var(--ink-muted)',
+                      cursor: 'pointer',
+                      transition: 'all 0.1s',
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.borderColor = 'var(--saffron)'
+                      e.currentTarget.style.color = 'var(--saffron-dark)'
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.borderColor = 'var(--border)'
+                      e.currentTarget.style.color = 'var(--ink-muted)'
+                    }}
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </section>
+      )}
 
       {/* Main content */}
-      <main style={{ maxWidth: 900, margin: '0 auto', padding: '24px 20px 60px' }}>
+      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 24px 60px' }}>
 
-        {/* Tabs */}
-        <div className="tab-bar" style={{
-          display: 'flex',
-          gap: 4,
-          padding: '4px',
-          background: 'var(--surface-3)',
-          borderRadius: 10,
-          width: 'fit-content',
-          marginBottom: 20,
-        }}>
-          <button
-            className={`tab-btn${activeTab === 'sections' ? ' active' : ''}`}
-            onClick={() => handleTabChange('sections')}
-          >
-            Sections
-            <span style={{ marginLeft: 6, fontSize: '0.75rem', opacity: 0.6 }}>
-              {activeTab === 'sections' ? filteredSections.length : data.sections.length}
-            </span>
-          </button>
-          <button
-            className={`tab-btn${activeTab === 'forms' ? ' active' : ''}`}
-            onClick={() => handleTabChange('forms')}
-          >
-            Forms
-            <span style={{ marginLeft: 6, fontSize: '0.75rem', opacity: 0.6 }}>
-              {activeTab === 'forms' ? filteredForms.length : data.forms.length}
-            </span>
-          </button>
-          <button
-            className={`tab-btn${activeTab === 'scanner' ? ' active' : ''}`}
-            onClick={() => handleTabChange('scanner')}
-          >
-            <span className="tab-label-long">Document Scanner</span>
-            <span className="tab-label-short">Scanner</span>
-          </button>
-          <button
-            className={`tab-btn${activeTab === 'ask' ? ' active' : ''}`}
-            onClick={() => handleTabChange('ask')}
-          >
-            <span className="tab-label-long">AaykarMitra</span>
-            <span className="tab-label-short">AI Chat</span>
-          </button>
-          <button
-            className={`tab-btn${activeTab === 'gap' ? ' active' : ''}`}
-            onClick={() => handleTabChange('gap')}
-          >
-            <span className="tab-label-long">Gap Auditor</span>
-            <span className="tab-label-short">Gaps</span>
-          </button>
-        </div>
+        {/* Sections / Forms toggle — search mode only */}
+        {(activeTab === 'sections' || activeTab === 'forms') && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+            <div style={{
+              display: 'inline-flex',
+              gap: 2,
+              padding: '3px',
+              background: 'var(--surface-3)',
+              borderRadius: 8,
+            }}>
+              <button
+                className={`tab-btn${activeTab === 'sections' ? ' active' : ''}`}
+                onClick={() => handleTabChange('sections')}
+                style={{ padding: '6px 16px', fontSize: '0.85rem' }}
+              >
+                Sections
+                <span style={{ marginLeft: 5, fontSize: '0.73rem', opacity: 0.55 }}>
+                  {activeTab === 'sections' ? filteredSections.length : data.sections.length}
+                </span>
+              </button>
+              <button
+                className={`tab-btn${activeTab === 'forms' ? ' active' : ''}`}
+                onClick={() => handleTabChange('forms')}
+                style={{ padding: '6px 16px', fontSize: '0.85rem' }}
+              >
+                Forms
+                <span style={{ marginLeft: 5, fontSize: '0.73rem', opacity: 0.55 }}>
+                  {activeTab === 'forms' ? filteredForms.length : data.forms.length}
+                </span>
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* Stats bar — hidden on scanner, ask, and gap tabs */}
         {activeTab !== 'scanner' && activeTab !== 'ask' && activeTab !== 'gap' && (

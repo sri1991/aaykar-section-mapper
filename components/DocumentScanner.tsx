@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { MappingData } from '@/lib/types'
 import { processText, type TextSegment, type ScanStats } from '@/lib/scanner'
+import { openPrintWindow, downloadDocx } from '@/lib/document-export'
 
 interface Props {
   data: MappingData
@@ -31,12 +32,6 @@ function initAccepted(segments: TextSegment[]): Map<number, boolean> {
   return map
 }
 
-function getAcceptedText(segments: TextSegment[], accepted: Map<number, boolean>): string {
-  return segments.map((seg, i) => {
-    if (seg.type && accepted.get(i) && seg.replacement) return seg.replacement
-    return seg.text
-  }).join('')
-}
 
 export default function DocumentScanner({ data }: Props) {
   const [inputMode, setInputMode]     = useState<InputMode>('paste')
@@ -180,48 +175,10 @@ export default function DocumentScanner({ data }: Props) {
     })
   }, [])
 
-  const handleDownloadPdf = useCallback(() => {
+  const handleDownload = useCallback(async (format: 'pdf' | 'docx', mode: 'clean' | 'redline') => {
     if (!segments) return
-    const text = getAcceptedText(segments, accepted)
-    const win = window.open('', '_blank', 'width=850,height=700')
-    if (!win) return
-    const escaped = text
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-    win.document.write(`<!DOCTYPE html><html><head>
-      <meta charset="utf-8"/>
-      <title>${fileName ?? 'document'}</title>
-      <style>
-        body{font-family:Arial,sans-serif;font-size:11pt;line-height:1.7;margin:2.5cm;white-space:pre-wrap;word-break:break-word;color:#111}
-        @media print{body{margin:1.5cm}@page{margin:1.5cm}}
-      </style>
-    </head><body>${escaped}</body></html>`)
-    win.document.close()
-    win.focus()
-    setTimeout(() => { win.print() }, 400)
-  }, [segments, accepted, fileName])
-
-  const handleDownloadDocx = useCallback(async () => {
-    if (!segments) return
-    const { Document, Paragraph, TextRun, Packer } = await import('docx')
-    const text = getAcceptedText(segments, accepted)
-    const lines = text.split('\n')
-    const doc = new Document({
-      sections: [{
-        properties: {},
-        children: lines.map(line => new Paragraph({ children: [new TextRun(line || ' ')] })),
-      }],
-    })
-    const blob = await Packer.toBlob(doc)
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = fileName
-      ? fileName.replace(/\.(docx|pdf)$/i, '_updated.docx')
-      : 'aaykar_updated.docx'
-    a.click()
-    URL.revokeObjectURL(url)
+    if (format === 'pdf') openPrintWindow(segments, accepted, mode, fileName)
+    else await downloadDocx(segments, accepted, mode, fileName)
   }, [segments, accepted, fileName])
 
   const activeText = inputMode === 'paste' ? pasteText : (extractedText ?? '')
@@ -372,21 +329,16 @@ export default function DocumentScanner({ data }: Props) {
                   <button onClick={rejectAll} style={smallBtnStyle('#f9fafb', '#d1d5db', '#6b7280')}>✗ Reject all</button>
                 </div>
                 {/* Download buttons */}
-                <div style={{ display: 'flex', gap: 6 }}>
-                  <button
-                    onClick={fileType === 'docx' ? handleDownloadDocx : handleDownloadPdf}
-                    className="tab-btn active"
-                    style={{ fontSize: '0.82rem', padding: '7px 14px' }}
-                  >
-                    {fileType === 'docx' ? '↓ Download DOCX' : '↓ Download PDF'}
-                  </button>
-                  <button
-                    onClick={fileType === 'docx' ? handleDownloadPdf : handleDownloadDocx}
-                    className="tab-btn"
-                    style={{ fontSize: '0.82rem', padding: '7px 14px' }}
-                  >
-                    {fileType === 'docx' ? '↓ PDF' : '↓ DOCX'}
-                  </button>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  <div style={{ fontSize: '0.7rem', color: 'var(--ink-faint)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: 2 }}>Download</div>
+                  <div style={{ display: 'flex', gap: 5 }}>
+                    <button onClick={() => handleDownload('pdf', 'clean')} className="tab-btn active" style={{ fontSize: '0.78rem', padding: '6px 11px' }}>↓ Final PDF</button>
+                    <button onClick={() => handleDownload('pdf', 'redline')} className="tab-btn" style={{ fontSize: '0.78rem', padding: '6px 11px' }}>↓ Redline PDF</button>
+                  </div>
+                  <div style={{ display: 'flex', gap: 5 }}>
+                    <button onClick={() => handleDownload('docx', 'clean')} className="tab-btn active" style={{ fontSize: '0.78rem', padding: '6px 11px' }}>↓ Final DOCX</button>
+                    <button onClick={() => handleDownload('docx', 'redline')} className="tab-btn" style={{ fontSize: '0.78rem', padding: '6px 11px' }}>↓ Redline DOCX</button>
+                  </div>
                 </div>
               </div>
             </div>
