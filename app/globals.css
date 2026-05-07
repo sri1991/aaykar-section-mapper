@@ -176,7 +176,6 @@ html {
     var(--paper);
   position: relative;
 }
-.hero > * { max-width: 1144px; }
 .hero::after {
   content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.18;
   background-image:

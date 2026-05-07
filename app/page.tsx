@@ -1,7 +1,7 @@
 import { getData } from '@/lib/search'
-import AaykarSetuApp from '@/components/TaxBridgeApp'
+import SectionMapper from '@/components/SectionMapper'
 
 export default function Home() {
   const data = getData()
-  return <AaykarSetuApp data={data} />
+  return <SectionMapper data={data} />
 }

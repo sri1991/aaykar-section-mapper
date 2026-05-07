@@ -41,3 +41,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# internal — not for public repo
+.claude/
+STATE.md
+AGENTS.md
+CLAUDE.md
+FEATURES.md
+PRICING.md
+ROADMAP.md
+ROADMAP_V2.md
+*.pdf
+proxy.ts
