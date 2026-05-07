@@ -4,6 +4,7 @@ import { useState, useCallback, useRef, useEffect } from 'react'
 import type { MappingData } from '@/lib/types'
 import { processText, type TextSegment, type ScanStats } from '@/lib/scanner'
 import { openPrintWindow, downloadDocx } from '@/lib/document-export'
+import ImpactPanel from '@/components/ImpactPanel'
 
 interface Props {
   data: MappingData
@@ -40,19 +41,37 @@ export default function DocumentScanner({ data }: Props) {
   const [fileType, setFileType]       = useState<FileType>(null)
   const [extractedText, setExtracted] = useState<string | null>(null)
   const [scanning, setScanning]       = useState(false)
-  const [segments, setSegments]       = useState<TextSegment[] | null>(null)
-  const [stats, setStats]             = useState<ScanStats | null>(null)
-  const [accepted, setAccepted]       = useState<Map<number, boolean>>(new Map())
+  const [segments, setSegments]             = useState<TextSegment[] | null>(null)
+  const [stats, setStats]                   = useState<ScanStats | null>(null)
+  const [flaggedSectionIds, setFlaggedIds]  = useState<string[]>([])
+  const [accepted, setAccepted]             = useState<Map<number, boolean>>(new Map())
   const [uploadError, setUploadError] = useState<string | null>(null)
   const [ocrProgress, setOcrProgress] = useState<string | null>(null)
   const [tooltip, setTooltip]         = useState<{ text: string; x: number; y: number } | null>(null)
+  const [isDraggingOver, setIsDraggingOver] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const dragCounterRef = useRef(0)
 
   useEffect(() => {
     const hide = () => setTooltip(null)
     window.addEventListener('scroll', hide, true)
     return () => window.removeEventListener('scroll', hide, true)
   }, [])
+
+  // Auto-scan the moment text-based extraction completes — no manual button click needed
+  useEffect(() => {
+    if (!extractedText || extractedText.trim().length <= 10) return
+    setScanning(true)
+    const timer = setTimeout(() => {
+      const result = processText(extractedText, data)
+      setSegments(result.segments)
+      setStats(result.stats)
+      setFlaggedIds(result.flaggedSectionIds)
+      setAccepted(initAccepted(result.segments))
+      setScanning(false)
+    }, 30)
+    return () => clearTimeout(timer)
+  }, [extractedText, data])
 
   const handleFileUpload = useCallback(async (file: File) => {
     const name = file.name.toLowerCase()
@@ -66,6 +85,7 @@ export default function DocumentScanner({ data }: Props) {
     setExtracted(null)
     setSegments(null)
     setStats(null)
+    setFlaggedIds([])
     setAccepted(new Map())
     setUploadError(null)
     setOcrProgress(null)
@@ -102,7 +122,12 @@ export default function DocumentScanner({ data }: Props) {
         } else {
           setOcrProgress('Starting OCR engine…')
           const { createWorker } = await import('tesseract.js')
-          const worker = await createWorker('eng', 1, { logger: () => {} })
+          const worker = await createWorker('eng', 1, {
+            workerPath: '/tesseract-worker.min.js',
+            corePath: '/tesseract-core-lstm.wasm.js',
+            workerBlobURL: false,
+            logger: () => {},
+          })
           const ocrPages: string[] = []
           for (let i = 1; i <= pdf.numPages; i++) {
             setOcrProgress(`OCR: page ${i} of ${pdf.numPages}…`)
@@ -134,9 +159,30 @@ export default function DocumentScanner({ data }: Props) {
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault()
+    dragCounterRef.current = 0
+    setIsDraggingOver(false)
     const file = e.dataTransfer.files[0]
-    if (file) handleFileUpload(file)
+    if (file) {
+      setInputMode('upload')
+      handleFileUpload(file)
+    }
   }, [handleFileUpload])
+
+  const handleDragEnter = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounterRef.current += 1
+    setIsDraggingOver(true)
+  }, [])
+
+  const handleDragLeave = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+    dragCounterRef.current -= 1
+    if (dragCounterRef.current === 0) setIsDraggingOver(false)
+  }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent) => {
+    e.preventDefault()
+  }, [])
 
   const handleScan = useCallback(() => {
     const text = inputMode === 'paste' ? pasteText : (extractedText ?? '')
@@ -146,6 +192,7 @@ export default function DocumentScanner({ data }: Props) {
       const result = processText(text, data)
       setSegments(result.segments)
       setStats(result.stats)
+      setFlaggedIds(result.flaggedSectionIds)
       setAccepted(initAccepted(result.segments))
       setScanning(false)
     }, 30)
@@ -189,7 +236,28 @@ export default function DocumentScanner({ data }: Props) {
   const pendingCount   = [...accepted.values()].filter(v => !v).length
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+    <div
+      style={{ display: 'flex', flexDirection: 'column', gap: 20, position: 'relative' }}
+      onDrop={handleDrop}
+      onDragEnter={handleDragEnter}
+      onDragLeave={handleDragLeave}
+      onDragOver={handleDragOver}
+    >
+      {isDraggingOver && (
+        <div style={{
+          position: 'absolute', inset: 0, zIndex: 50, borderRadius: 14,
+          border: '2px dashed var(--saffron)', background: 'rgba(245,158,11,0.06)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          pointerEvents: 'none',
+        }}>
+          <div style={{
+            background: 'var(--saffron)', color: 'white', borderRadius: 10,
+            padding: '12px 24px', fontWeight: 700, fontSize: '1rem',
+          }}>
+            Drop PDF or DOCX to scan
+          </div>
+        </div>
+      )}
 
       {/* Intro */}
       <div style={{ background: 'var(--surface)', border: '1px solid var(--border)', borderRadius: 14, padding: '18px 22px' }}>
@@ -205,7 +273,7 @@ export default function DocumentScanner({ data }: Props) {
           <button
             key={mode}
             className={`tab-btn${inputMode === mode ? ' active' : ''}`}
-            onClick={() => { setInputMode(mode); setSegments(null); setStats(null); setAccepted(new Map()) }}
+            onClick={() => { setInputMode(mode); setSegments(null); setStats(null); setFlaggedIds([]); setAccepted(new Map()) }}
           >
             {mode === 'paste' ? 'Paste text' : 'Upload file'}
           </button>
@@ -216,7 +284,7 @@ export default function DocumentScanner({ data }: Props) {
       {inputMode === 'paste' ? (
         <textarea
           value={pasteText}
-          onChange={e => { setPasteText(e.target.value); setSegments(null); setStats(null); setAccepted(new Map()) }}
+          onChange={e => { setPasteText(e.target.value); setSegments(null); setStats(null); setFlaggedIds([]); setAccepted(new Map()) }}
           placeholder="Paste your document text here — salary structure, agreement, filing notice, audit report..."
           rows={10}
           style={{
@@ -230,7 +298,6 @@ export default function DocumentScanner({ data }: Props) {
         />
       ) : (
         <div
-          onDrop={handleDrop}
           onDragOver={e => e.preventDefault()}
           onClick={() => fileInputRef.current?.click()}
           style={{
@@ -279,23 +346,31 @@ export default function DocumentScanner({ data }: Props) {
         </div>
       )}
 
-      {/* Scan button */}
-      <div>
-        <button
-          onClick={handleScan}
-          disabled={!canScan}
-          style={{
-            padding: '12px 32px', background: canScan ? 'var(--saffron)' : 'var(--surface-3)',
-            color: canScan ? 'white' : 'var(--ink-faint)', border: 'none', borderRadius: 10,
-            fontFamily: 'var(--font-body)', fontSize: '0.95rem', fontWeight: 600,
-            cursor: canScan ? 'pointer' : 'not-allowed', transition: 'background 0.15s',
-          }}
-          onMouseEnter={e => { if (canScan) e.currentTarget.style.background = 'var(--saffron-dark)' }}
-          onMouseLeave={e => { if (canScan) e.currentTarget.style.background = 'var(--saffron)' }}
-        >
-          {scanning ? 'Scanning…' : 'Scan document'}
-        </button>
-      </div>
+      {/* Scan button — upload mode auto-scans; only shown for paste mode */}
+      {inputMode === 'paste' && (
+        <div>
+          <button
+            onClick={handleScan}
+            disabled={!canScan}
+            style={{
+              padding: '12px 32px', background: canScan ? 'var(--saffron)' : 'var(--surface-3)',
+              color: canScan ? 'white' : 'var(--ink-faint)', border: 'none', borderRadius: 10,
+              fontFamily: 'var(--font-body)', fontSize: '0.95rem', fontWeight: 600,
+              cursor: canScan ? 'pointer' : 'not-allowed', transition: 'background 0.15s',
+            }}
+            onMouseEnter={e => { if (canScan) e.currentTarget.style.background = 'var(--saffron-dark)' }}
+            onMouseLeave={e => { if (canScan) e.currentTarget.style.background = 'var(--saffron)' }}
+          >
+            {scanning ? 'Scanning…' : 'Scan document'}
+          </button>
+        </div>
+      )}
+      {inputMode === 'upload' && scanning && (
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.88rem', color: 'var(--ink-muted)' }}>
+          <span style={{ display: 'inline-block', width: 14, height: 14, border: '2px solid var(--saffron)', borderTopColor: 'transparent', borderRadius: '50%', animation: 'spin 0.7s linear infinite' }} />
+          Scanning document…
+        </div>
+      )}
 
       {/* Results */}
       {segments && stats && (
@@ -422,6 +497,13 @@ export default function DocumentScanner({ data }: Props) {
           <p style={{ fontSize: '0.75rem', color: 'var(--ink-faint)', textAlign: 'center', margin: 0 }}>
             Automated scan only. Always verify with a qualified CA before filing or relying on any mapping.
           </p>
+
+          {flaggedSectionIds.length > 0 && (
+            <ImpactPanel
+              documentText={activeText}
+              flaggedSectionIds={flaggedSectionIds}
+            />
+          )}
         </>
       )}
 

@@ -10,7 +10,7 @@ A compliance workbench that helps Indian SMEs and CAs get their documents, termi
 
 ## MVP — ship in 8 days
 
-**3 tabs · static site · no backend · no auth**
+**4 tabs · static site · Gemini-powered notice analysis**
 
 ---
 
@@ -46,22 +46,15 @@ Paste text or upload DOCX → get an annotated output with all old terminology a
 
 ---
 
-### Tab 3 — Gap Auditor (questionnaire mode)
+### Tab 4 — Notice Analyzer
 
-**Days 5–7** · Rule-engine approach — no AI, no document parsing. 6 questions in, personalized gap checklist out. Fast to build, defensible, testable.
+**Days 7–9** · Deep extraction of legal documents.
 
-| # | Question | Options |
-|---|----------|---------|
-| Q1 | Business type | Sole proprietor / Partnership / Pvt Ltd / LLP / Other |
-| Q2 | Employee headcount | 0 / 1–10 / 11–50 / 50+ |
-| Q3 | Do you currently file TDS returns? | Yes / No |
-| Q4 | Which deductions do you claim? | 80C, 80D, HRA, LTA, NPS, others (multi-select) |
-| Q5 | Do you have foreign income or assets? | Yes / No |
-| Q6 | Are your employees on the old or new tax regime? | Old / New |
+- **Extraction:** Gemini 2.5 Flash extracts PAN, AY, FY, Section, DIN, and Demand Amount.
+- **Summary:** 3-sentence plain-English TL;DR for CAs.
+- **Document Checklist:** AI-generated list of documents the CA needs to gather based on the specific claims in the notice.
 
-**Output:** personalized checklist of gaps — e.g. "You need to collect PAN-Aadhaar linking confirmation from employees". Max 8–10 items, specific not generic.
-
-> **Critical rule:** Wrong gaps destroy trust with CAs permanently. Every gap item must be sourced to a specific CBDT notification. No guessing.
+---
 
 ---
 

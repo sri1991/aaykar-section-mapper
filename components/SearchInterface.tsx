@@ -59,12 +59,6 @@ export function SearchInterface({ data }: SearchInterfaceProps) {
     [data.forms]
   );
 
-  // Categories
-  const categories = useMemo(() => {
-    const cats = Array.from(new Set(data.sections.map((s) => s.category))).sort();
-    return ["All", ...cats];
-  }, [data.sections]);
-
   // Search results
   const sectionResults = useMemo((): Section[] => {
     let results = query.trim()
@@ -316,7 +310,7 @@ export function SearchInterface({ data }: SearchInterfaceProps) {
           <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
             {sectionResults.length > 0 ? (
               sectionResults.slice(0, 50).map((section, i) => (
-                <SectionCard key={section.id} section={section} index={i} />
+                <SectionCard key={section.id} section={section} index={i} totalSections={data.meta.total_sections} />
               ))
             ) : (
               <EmptyState query={query} tab={tab} />

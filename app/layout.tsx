@@ -1,16 +1,16 @@
 import type { Metadata } from 'next'
-import { DM_Sans, DM_Serif_Display, DM_Mono } from 'next/font/google'
+import { Inter_Tight, Instrument_Serif, JetBrains_Mono } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const dmSans = DM_Sans({
+const interTight = Inter_Tight({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-body',
   display: 'swap',
 })
 
-const dmSerif = DM_Serif_Display({
+const instrumentSerif = Instrument_Serif({
   subsets: ['latin'],
   weight: ['400'],
   style: ['normal', 'italic'],
@@ -18,9 +18,9 @@ const dmSerif = DM_Serif_Display({
   display: 'swap',
 })
 
-const dmMono = DM_Mono({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['400', '500'],
+  weight: ['400', '500', '600'],
   variable: '--font-mono',
   display: 'swap',
 })
@@ -38,7 +38,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${dmSerif.variable} ${dmMono.variable}`}>
+    <html lang="en" data-theme="saffron" className={`${interTight.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable}`}>
       <body>
         {children}
         <Analytics />

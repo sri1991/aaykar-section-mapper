@@ -5,7 +5,7 @@ let _data: MappingData | null = null
 
 export function getData(): MappingData {
   if (!_data) {
-    _data = require('./taxbridge-mapping.json') as MappingData
+    _data = require('./data/mapping.json') as MappingData
   }
   return _data
 }

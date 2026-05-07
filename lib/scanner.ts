@@ -20,6 +20,7 @@ export interface ScanStats {
 export interface ScanResult {
   segments: TextSegment[]
   stats: ScanStats
+  flaggedSectionIds: string[]
 }
 
 interface Match {
@@ -29,6 +30,7 @@ interface Match {
   type: AnnotationType
   replacement?: string
   note?: string
+  sectionId?: string
 }
 
 function escapeRegex(s: string): string {
@@ -107,6 +109,7 @@ export function processText(text: string, data: MappingData): ScanResult {
         note: section.limit_changed
           ? `Limit updated — verify amount.${section.limit_changed_note ? ` ${section.limit_changed_note}.` : ''} ${section.plain_english_summary}`
           : section.plain_english_summary,
+        sectionId: section.limit_changed ? section.id : undefined,
       })
     }
   }
@@ -145,7 +148,11 @@ export function processText(text: string, data: MappingData): ScanResult {
     limitWarnings: resolved.filter(m => m.type === 'limit-warning').length,
   }
 
-  return { segments, stats }
+  const flaggedSectionIds = [...new Set(
+    resolved.filter(m => m.type === 'limit-warning' && m.sectionId).map(m => m.sectionId!)
+  )]
+
+  return { segments, stats, flaggedSectionIds }
 }
 
 // Returns plain text with confirmed replacements applied (ambiguous left as-is)

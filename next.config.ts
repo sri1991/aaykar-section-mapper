@@ -17,7 +17,9 @@ const ContentSecurityPolicy = `
     https://api.groq.com
     https://api.cohere.com
     https://api.anthropic.com
-    https://va.vercel-scripts.com;
+    https://va.vercel-scripts.com
+    https://cdn.jsdelivr.net
+    https://tessdata.projectnaptha.com;
   worker-src 'self' blob:;
   frame-src https://accounts.google.com;
   frame-ancestors 'none';

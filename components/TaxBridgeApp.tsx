@@ -1,461 +1,396 @@
 'use client'
 
-import { useState, useMemo, useCallback } from 'react'
+import { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { createClient } from '@/lib/supabase/client'
 import Fuse from 'fuse.js'
 import type { Section, Form, MappingData } from '@/lib/types'
-import { SECTION_CATEGORIES, CHANGE_TYPE_LABELS } from '@/lib/search'
-import SearchBar from './SearchBar'
+import { SECTION_CATEGORIES } from '@/lib/search'
 import SectionCard from './SectionCard'
 import FormCard from './FormCard'
-import CategoryFilter from './CategoryFilter'
-import StatsBar from './StatsBar'
 import DocumentScanner from './DocumentScanner'
 import AaykarMitra from './AaykarMitra'
-import GapAuditor from './GapAuditor'
+import NoticeAnalyzer from './NoticeAnalyzer'
+import OnboardingTour from './OnboardingTour'
 
-interface Props {
-  data: MappingData
-}
+type TabType = 'sections' | 'forms' | 'scanner' | 'ask' | 'notice'
+
+const NAV_ITEMS: { k: TabType; l: string; kbd: string }[] = [
+  { k: 'sections', l: 'Section mapper', kbd: 'S' },
+  { k: 'forms',    l: 'Forms',          kbd: 'F' },
+  { k: 'scanner',  l: 'Doc scanner',    kbd: 'D' },
+  { k: 'ask',      l: 'AaykarMitra',    kbd: 'A' },
+  { k: 'notice',   l: 'Notice analyzer', kbd: 'N' },
+]
+
+const SUGGESTIONS = [
+  { ref: '80C',  tag: 'deductions' },
+  { ref: '194C', tag: 'contractor TDS' },
+  { ref: '87A',  tag: 'rebate' },
+  { ref: 'Form 16' },
+  { ref: 'HRA' },
+  { ref: 'Form 24Q' },
+  { ref: 'gratuity' },
+]
+
+interface Props { data: MappingData }
 
 export default function AaykarSetuApp({ data }: Props) {
   const supabase = createClient()
   const [query, setQuery] = useState('')
-  const [activeTab, setActiveTab] = useState<'sections' | 'forms' | 'scanner' | 'ask' | 'gap'>('sections')
+  const [activeTab, setActiveTab] = useState<TabType>('sections')
   const [activeCategory, setActiveCategory] = useState('All')
+  const [viewMode] = useState<'cards' | 'table'>('cards')
+  const searchRef = useRef<HTMLInputElement>(null)
 
-  // Build Fuse indexes once
+  // ── Fuse indexes ──────────────────────────────────────────────────────────
   const sectionFuse = useMemo(() => new Fuse(data.sections, {
     keys: [
-      { name: 'old_ref', weight: 2 },
-      { name: 'new_ref', weight: 2 },
-      { name: 'old_title', weight: 1.5 },
-      { name: 'new_title', weight: 1.5 },
-      { name: 'keywords', weight: 1 },
-      { name: 'plain_english_summary', weight: 0.8 },
+      { name: 'old_ref', weight: 2 }, { name: 'new_ref', weight: 2 },
+      { name: 'old_title', weight: 1.5 }, { name: 'new_title', weight: 1.5 },
+      { name: 'keywords', weight: 1 }, { name: 'plain_english_summary', weight: 0.8 },
       { name: 'category', weight: 0.5 },
     ],
-    threshold: 0.35,
-    includeScore: true,
-    ignoreLocation: true,
-    minMatchCharLength: 2,
+    threshold: 0.35, includeScore: true, ignoreLocation: true, minMatchCharLength: 2,
   }), [data.sections])
 
   const formFuse = useMemo(() => new Fuse(data.forms, {
     keys: [
-      { name: 'old_form', weight: 2 },
-      { name: 'new_form', weight: 2 },
-      { name: 'old_purpose', weight: 1.5 },
-      { name: 'new_purpose', weight: 1.5 },
-      { name: 'keywords', weight: 1 },
-      { name: 'structural_changes', weight: 0.8 },
+      { name: 'old_form', weight: 2 }, { name: 'new_form', weight: 2 },
+      { name: 'old_purpose', weight: 1.5 }, { name: 'new_purpose', weight: 1.5 },
+      { name: 'keywords', weight: 1 }, { name: 'structural_changes', weight: 0.8 },
     ],
-    threshold: 0.35,
-    includeScore: true,
-    ignoreLocation: true,
-    minMatchCharLength: 2,
+    threshold: 0.35, includeScore: true, ignoreLocation: true, minMatchCharLength: 2,
   }), [data.forms])
 
-  // Filtered + searched sections
+  // ── Filtered results ──────────────────────────────────────────────────────
   const filteredSections = useMemo(() => {
-    let results: Section[]
-    if (query.trim().length >= 2) {
-      results = sectionFuse.search(query).map(r => r.item)
-    } else {
-      results = data.sections
-    }
-    if (activeCategory !== 'All') {
-      results = results.filter(s => s.category === activeCategory)
-    }
+    let results: Section[] = query.trim().length >= 2
+      ? sectionFuse.search(query).map(r => r.item)
+      : data.sections
+    if (activeCategory !== 'All') results = results.filter(s => s.category === activeCategory)
     return results
   }, [query, activeCategory, sectionFuse, data.sections])
 
-  // Filtered + searched forms
   const filteredForms = useMemo(() => {
-    if (query.trim().length >= 2) {
-      return formFuse.search(query).map(r => r.item)
-    }
+    if (query.trim().length >= 2) return formFuse.search(query).map(r => r.item)
     return data.forms
   }, [query, formFuse, data.forms])
 
-  // Category counts (from current search, ignoring category filter)
   const categoryCounts = useMemo(() => {
-    let base: Section[]
-    if (query.trim().length >= 2) {
-      base = sectionFuse.search(query).map(r => r.item)
-    } else {
-      base = data.sections
-    }
+    const base: Section[] = query.trim().length >= 2
+      ? sectionFuse.search(query).map(r => r.item)
+      : data.sections
     const counts: Record<string, number> = {}
-    for (const s of base) {
-      counts[s.category] = (counts[s.category] ?? 0) + 1
-    }
+    for (const s of base) counts[s.category] = (counts[s.category] ?? 0) + 1
     return counts
   }, [query, sectionFuse, data.sections])
 
-  const limitChanges = data.sections.filter(s => s.limit_changed).length
+  const limitChanges = useMemo(() => data.sections.filter(s => s.limit_changed).length, [data.sections])
 
+  const lastVerified = useMemo(() => {
+    if (!data.meta.generated) return '07 May'
+    return new Date(data.meta.generated).toLocaleDateString('en-GB', { day: '2-digit', month: 'short' })
+  }, [data.meta.generated])
+
+  // ── Handlers ──────────────────────────────────────────────────────────────
   const handleQueryChange = useCallback((v: string) => {
     setQuery(v)
-    // Reset category when query changes
     if (v.trim().length >= 2) setActiveCategory('All')
   }, [])
 
-  const handleTabChange = useCallback((tab: 'sections' | 'forms' | 'scanner' | 'ask' | 'gap') => {
+  const handleTabChange = useCallback((tab: TabType) => {
     setActiveTab(tab)
     setActiveCategory('All')
   }, [])
 
-  const suggestions = ['80C', '194C', 'Form 16', 'HRA', 'TDS salary', '87A', 'gratuity', 'Form 24Q']
+  // ── Keyboard shortcuts ────────────────────────────────────────────────────
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      // ⌘K / Ctrl+K → focus search
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        if (activeTab !== 'sections' && activeTab !== 'forms') handleTabChange('sections')
+        setTimeout(() => searchRef.current?.focus(), 0)
+        return
+      }
+      // Single-key nav shortcuts (S/F/D/A/N) when not in a text input
+      const tag = (document.activeElement as HTMLElement)?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
+      if (e.metaKey || e.ctrlKey || e.altKey) return
+      const map: Partial<Record<string, TabType>> = { s: 'sections', f: 'forms', d: 'scanner', a: 'ask', n: 'notice' }
+      const dest = map[e.key.toLowerCase()]
+      if (dest) handleTabChange(dest)
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [activeTab, handleTabChange])
+
+  const isSearchTab = activeTab === 'sections' || activeTab === 'forms'
+
+  // ── Category counts for filter bar ────────────────────────────────────────
+  const allCount = query.trim().length >= 2
+    ? Object.values(categoryCounts).reduce((a, b) => a + b, 0)
+    : data.sections.length
 
   return (
-    <div style={{ minHeight: '100vh', background: 'var(--surface-2)' }}>
-      {/* Header */}
-      <header style={{
-        background: 'var(--surface)',
-        borderBottom: '1px solid var(--border)',
-        padding: '0',
-        position: 'sticky',
-        top: 0,
-        zIndex: 50,
-      }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 0, height: 60 }}>
-          {/* Logo */}
-          <button
-            onClick={() => handleTabChange('sections')}
-            style={{ display: 'flex', alignItems: 'center', gap: 8, background: 'none', border: 'none', cursor: 'pointer', padding: 0, flexShrink: 0 }}
-          >
-            <span className="font-display" style={{ fontSize: '1.35rem', color: 'var(--ink)', lineHeight: 1 }}>
-              AaykarSetu
-            </span>
-            <span style={{
-              fontSize: '0.68rem',
-              fontWeight: 600,
-              padding: '2px 7px',
-              borderRadius: 100,
-              background: 'var(--saffron-light)',
-              color: 'var(--saffron-dark)',
-              letterSpacing: '0.05em',
-            }}>
-              FREE
-            </span>
-          </button>
+    <div className="app-shell">
 
-          {/* Tool nav — pill buttons, visually separated */}
-          <nav style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 2,
-            padding: '0 24px',
-            borderLeft: '1px solid var(--border)',
-            borderRight: '1px solid var(--border)',
-            height: '100%',
-          }}>
-            <button
-              className={`nav-tool-btn${activeTab === 'scanner' ? ' active' : ''}`}
-              onClick={() => handleTabChange('scanner')}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
-              </svg>
-              <span className="nav-tool-label">Doc Scanner</span>
-            </button>
-            <button
-              className={`nav-tool-btn${activeTab === 'ask' ? ' active' : ''}`}
-              onClick={() => handleTabChange('ask')}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-              </svg>
-              <span className="nav-tool-label">AaykarMitra</span>
-            </button>
-            <button
-              className={`nav-tool-btn${activeTab === 'gap' ? ' active' : ''}`}
-              onClick={() => handleTabChange('gap')}
-            >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/>
-              </svg>
-              <span className="nav-tool-label">Gap Auditor</span>
-            </button>
-          </nav>
+      {/* ── TopBar ──────────────────────────────────────────────────────────── */}
+      <header className="topbar">
+        <button className="brand" onClick={() => handleTabChange('sections')}>
+          <span className="dot" aria-hidden="true" />
+          AaykarSetu
+          <small>v0.5 · preview</small>
+        </button>
 
-          {/* Right: Acts label + sign out */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexShrink: 0 }}>
-            <div className="header-acts" style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: 'var(--ink-muted)' }}>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500 }}>IT Act 1961</span>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-              <span style={{ fontFamily: 'var(--font-mono)', fontWeight: 500, color: 'var(--teal)' }}>IT Act 2025</span>
-            </div>
+        <nav className="navlinks" id="tour-nav">
+          {NAV_ITEMS.map(item => (
             <button
-              onClick={async () => {
-                await supabase.auth.signOut()
-                window.location.href = '/auth/login'
-              }}
-              title="Sign out"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                background: 'none',
-                border: '1px solid var(--border)',
-                borderRadius: 8,
-                padding: '5px 10px',
-                fontSize: '0.78rem',
-                color: 'var(--ink-muted)',
-                cursor: 'pointer',
-              }}
+              key={item.k}
+              className={activeTab === item.k ? 'active' : ''}
+              onClick={() => handleTabChange(item.k)}
             >
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
-              </svg>
-              <span className="nav-tool-label">Sign out</span>
+              {item.l}
+              <span className="kbd">{item.kbd}</span>
             </button>
-          </div>
+          ))}
+        </nav>
+
+        <div className="grow" />
+
+        <div className="acts">
+          <span>IT Act 1961</span>
+          <span className="arr">→</span>
+          <span className="new">IT Act 2025</span>
         </div>
+
+        <button
+          className="iconbtn"
+          title="Sign out"
+          onClick={async () => {
+            await supabase.auth.signOut()
+            window.location.href = '/auth/login'
+          }}
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+        </button>
       </header>
 
-      {/* Hero — search mode only */}
-      {(activeTab === 'sections' || activeTab === 'forms') && (
-        <section style={{
-          background: 'linear-gradient(160deg, #fff9f5 0%, var(--surface) 100%)',
-          borderBottom: '1px solid var(--border)',
-          padding: '40px 20px 32px',
-        }}>
-          <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-            <div style={{ maxWidth: 680, marginBottom: 28 }}>
-              <h1 className="font-display" style={{ fontSize: 'clamp(1.8rem, 4vw, 2.6rem)', lineHeight: 1.15, marginBottom: 10, color: 'var(--ink)' }}>
-                Find your section&rsquo;s new home<br />
-                <em style={{ color: 'var(--saffron)' }}>in seconds.</em>
-              </h1>
-              <p style={{ fontSize: '0.95rem', color: 'var(--ink-muted)', lineHeight: 1.6, margin: 0 }}>
-                India&rsquo;s Income Tax Act 2025 is live from April 1, 2026. Every section number has changed.
-                Search any old reference and instantly see what it maps to — with plain-English explanations.
-              </p>
-            </div>
+      {/* ── Search surfaces (sections + forms) ──────────────────────────────── */}
+      {isSearchTab && (
+        <>
+          {/* Hero */}
+          <div className="hero">
+            {!query && (
+              <>
+                <p className="eyebrow">
+                  Section mapper · {data.sections.length.toLocaleString()} sections · CBDT-verified
+                </p>
+                <h1>Find any 1961 section&rsquo;s new home <em>in 2025.</em></h1>
+                <p className="sub">
+                  Search a section number, a form, or a phrase. Results show the renumbering,
+                  the change type, and any monetary limit movement — with plain-English notes and the source citation.
+                </p>
+              </>
+            )}
 
-            {/* Search */}
-            <SearchBar value={query} onChange={handleQueryChange} />
+            {/* Megasearch */}
+            <div className="megasearch" id="tour-search">
+              <div className="scope">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M3 7h18M3 12h18M3 17h12"/></svg>
+                <span>All sections</span>
+                <svg className="chev" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M6 9l6 6 6-6"/></svg>
+              </div>
+              <input
+                ref={searchRef}
+                className="ipt"
+                value={query}
+                onChange={e => handleQueryChange(e.target.value)}
+                placeholder="Search by section number, form, or keyword…"
+              />
+              <span className="kshort">⌘K</span>
+              <button className="submit" onClick={() => searchRef.current?.focus()}>
+                Search
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+              </button>
+            </div>
 
             {/* Suggestions */}
             {!query && (
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 10 }}>
-                <span style={{ fontSize: '0.75rem', color: 'var(--ink-faint)', alignSelf: 'center' }}>Try:</span>
-                {suggestions.map(s => (
-                  <button
-                    key={s}
-                    onClick={() => setQuery(s)}
-                    style={{
-                      fontSize: '0.75rem',
-                      padding: '3px 10px',
-                      borderRadius: 100,
-                      border: '1px solid var(--border)',
-                      background: 'var(--surface)',
-                      color: 'var(--ink-muted)',
-                      cursor: 'pointer',
-                      transition: 'all 0.1s',
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.borderColor = 'var(--saffron)'
-                      e.currentTarget.style.color = 'var(--saffron-dark)'
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.borderColor = 'var(--border)'
-                      e.currentTarget.style.color = 'var(--ink-muted)'
-                    }}
-                  >
-                    {s}
+              <div className="suggrow">
+                <span className="lbl">Quick</span>
+                {SUGGESTIONS.map(s => (
+                  <button key={s.ref} className="sugg" onClick={() => handleQueryChange(s.ref)}>
+                    <span className="sref">{s.ref}</span>
+                    {s.tag && <span className="stag">{s.tag}</span>}
                   </button>
                 ))}
               </div>
             )}
+
+            {/* Index strip */}
+            {!query && (
+              <div className="indexstrip" id="tour-stats">
+                <div className="cell">
+                  <div className="n serif">{data.sections.length.toLocaleString()}</div>
+                  <div className="l">sections mapped</div>
+                </div>
+                <div className="cell">
+                  <div className="n serif">{data.forms.length.toLocaleString()}</div>
+                  <div className="l">forms reconciled</div>
+                </div>
+                <div className="cell warn">
+                  <div className="n serif">
+                    <span className="gly-r">₹</span>{limitChanges}
+                  </div>
+                  <div className="l">monetary limits changed</div>
+                </div>
+                <div className="cell">
+                  <div className="n serif">{lastVerified}</div>
+                  <div className="l">last CBDT verification</div>
+                </div>
+              </div>
+            )}
           </div>
-        </section>
-      )}
 
-      {/* Main content */}
-      <main style={{ maxWidth: 1100, margin: '0 auto', padding: '24px 24px 60px' }}>
+          {/* Filter bar */}
+          <div className="filterbar">
+            {/* Sections / Forms pills */}
+            <button
+              className={'pill' + (activeTab === 'sections' ? ' active' : '')}
+              onClick={() => handleTabChange('sections')}
+            >
+              Sections <span className="ct">{data.sections.length}</span>
+            </button>
+            <button
+              className={'pill' + (activeTab === 'forms' ? ' active' : '')}
+              onClick={() => handleTabChange('forms')}
+            >
+              Forms <span className="ct">{data.forms.length}</span>
+            </button>
 
-        {/* Sections / Forms toggle — search mode only */}
-        {(activeTab === 'sections' || activeTab === 'forms') && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
-            <div style={{
-              display: 'inline-flex',
-              gap: 2,
-              padding: '3px',
-              background: 'var(--surface-3)',
-              borderRadius: 8,
-            }}>
-              <button
-                className={`tab-btn${activeTab === 'sections' ? ' active' : ''}`}
-                onClick={() => handleTabChange('sections')}
-                style={{ padding: '6px 16px', fontSize: '0.85rem' }}
-              >
-                Sections
-                <span style={{ marginLeft: 5, fontSize: '0.73rem', opacity: 0.55 }}>
-                  {activeTab === 'sections' ? filteredSections.length : data.sections.length}
-                </span>
-              </button>
-              <button
-                className={`tab-btn${activeTab === 'forms' ? ' active' : ''}`}
-                onClick={() => handleTabChange('forms')}
-                style={{ padding: '6px 16px', fontSize: '0.85rem' }}
-              >
-                Forms
-                <span style={{ marginLeft: 5, fontSize: '0.73rem', opacity: 0.55 }}>
-                  {activeTab === 'forms' ? filteredForms.length : data.forms.length}
-                </span>
-              </button>
+            {/* Category pills — sections tab only */}
+            {activeTab === 'sections' && (
+              <>
+                <span className="divider" />
+                <button
+                  className={'pill' + (activeCategory === 'All' ? ' active' : '')}
+                  onClick={() => setActiveCategory('All')}
+                >
+                  All <span className="ct">{allCount}</span>
+                </button>
+                {SECTION_CATEGORIES.slice(1).map(cat => {
+                  const count = categoryCounts[cat] ?? 0
+                  if (count === 0 && query.trim().length >= 2) return null
+                  return (
+                    <button
+                      key={cat}
+                      className={'pill' + (activeCategory === cat ? ' active' : '')}
+                      onClick={() => setActiveCategory(cat)}
+                    >
+                      {cat} <span className="ct">{count || data.sections.filter(s => s.category === cat).length}</span>
+                    </button>
+                  )
+                })}
+              </>
+            )}
+
+            {/* Cards / Table toggle */}
+            <div className="seg">
+              <button className={viewMode === 'cards' ? 'on' : ''}>Cards</button>
+              <button className={viewMode === 'table' ? 'on' : ''}>Table</button>
             </div>
           </div>
-        )}
 
-        {/* Stats bar — hidden on scanner, ask, and gap tabs */}
-        {activeTab !== 'scanner' && activeTab !== 'ask' && activeTab !== 'gap' && (
-          <StatsBar
-            totalSections={data.sections.length}
-            totalForms={data.forms.length}
-            limitChanges={limitChanges}
-            activeTab={activeTab}
-            resultCount={activeTab === 'sections' ? filteredSections.length : filteredForms.length}
-          />
-        )}
-
-        {/* Gap Auditor intro strip */}
-        {activeTab === 'gap' && (
-          <div style={{
-            padding: '14px 18px',
-            borderRadius: 10,
-            background: 'var(--teal-light)',
-            border: '1px solid #b3ddd7',
-            marginBottom: 20,
-            fontSize: '0.85rem',
-            color: 'var(--teal-dark)',
-            lineHeight: 1.5,
-          }}>
-            <strong>6 questions · 2 minutes · personalised checklist.</strong>{' '}
-            Answer the questions below and get a prioritised list of compliance gaps specific to your situation — each sourced to a CBDT notification or statutory provision.
-          </div>
-        )}
-
-        {/* Category filter — sections only */}
-        {activeTab === 'sections' && (
-          <div style={{ margin: '16px 0' }}>
-            <CategoryFilter
-              active={activeCategory}
-              onChange={setActiveCategory}
-              counts={categoryCounts}
-            />
-          </div>
-        )}
-
-        {/* Disclaimer */}
-        {activeTab !== 'scanner' && activeTab !== 'ask' && activeTab !== 'gap' && (
-          <div style={{
-            fontSize: '0.72rem',
-            color: 'var(--ink-faint)',
-            padding: '6px 10px',
-            borderRadius: 6,
-            background: 'var(--surface-3)',
-            marginBottom: 16,
-            lineHeight: 1.5,
-          }}>
+          {/* Disclaimer */}
+          <div style={{ padding: '6px 28px', fontSize: 11.5, color: 'var(--ink-4)', lineHeight: 1.5, background: 'var(--paper)' }}>
             {data.meta.disclaimer}
           </div>
-        )}
 
-        {/* Results / Scanner / Ask / Gap */}
-        {activeTab === 'gap' ? (
-          <GapAuditor />
-        ) : activeTab === 'ask' ? (
-          <AaykarMitra />
-        ) : activeTab === 'scanner' ? (
+          {/* Results */}
+          <main style={{ padding: '16px 28px 48px', flex: 1 }}>
+            {activeTab === 'sections' ? (
+              filteredSections.length > 0 ? (
+                <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {filteredSections.map((section, i) => (
+                    <SectionCard key={section.id} section={section} index={i} totalSections={data.meta.total_sections} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState query={query} onSuggest={handleQueryChange} tab="sections" />
+              )
+            ) : (
+              filteredForms.length > 0 ? (
+                <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {filteredForms.map((form, i) => (
+                    <FormCard key={form.id} form={form} index={i} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState query={query} onSuggest={handleQueryChange} tab="forms" />
+              )
+            )}
+          </main>
+
+          {/* Footer */}
+          <footer style={{
+            borderTop: '1px solid var(--line)', padding: '18px 28px',
+            textAlign: 'center', fontSize: 12, color: 'var(--ink-4)',
+            background: 'var(--card)',
+          }}>
+            <p style={{ margin: 0 }}>
+              AaykarSetu · Data sourced from CBDT official concordance · Built for India&rsquo;s Tax Year 2026-27 transition
+            </p>
+            <p style={{ margin: '4px 0 0' }}>
+              Always verify with a qualified CA before relying on any mapping.{' '}
+              <a href="/privacy" style={{ color: 'var(--ink-4)', textDecoration: 'underline' }}>Privacy Policy</a>
+              {' · '}
+              <span style={{ color: 'var(--ink-3)', fontWeight: 500 }}>MSB Digital Labs</span>
+            </p>
+          </footer>
+        </>
+      )}
+
+      {/* ── Full-height feature surfaces ─────────────────────────────────────── */}
+      {activeTab === 'scanner' && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
           <DocumentScanner data={data} />
-        ) : activeTab === 'sections' ? (
-          filteredSections.length > 0 ? (
-            <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {filteredSections.map((section, i) => (
-                <SectionCard key={section.id} section={section} index={i} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState query={query} onSuggest={setQuery} tab="sections" />
-          )
-        ) : (
-          filteredForms.length > 0 ? (
-            <div className="stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {filteredForms.map((form, i) => (
-                <FormCard key={form.id} form={form} index={i} />
-              ))}
-            </div>
-          ) : (
-            <EmptyState query={query} onSuggest={setQuery} tab="forms" />
-          )
-        )}
-      </main>
+        </div>
+      )}
+      {activeTab === 'ask' && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <AaykarMitra />
+        </div>
+      )}
+      {activeTab === 'notice' && (
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minHeight: 0 }}>
+          <NoticeAnalyzer />
+        </div>
+      )}
 
-      {/* Footer */}
-      <footer style={{
-        borderTop: '1px solid var(--border)',
-        padding: '20px',
-        textAlign: 'center',
-        fontSize: '0.78rem',
-        color: 'var(--ink-faint)',
-        background: 'var(--surface)',
-      }}>
-        <p style={{ margin: 0 }}>
-          AaykarSetu · Data sourced from CBDT official concordance · Built for India&rsquo;s Tax Year 2026-27 transition
-        </p>
-        <p style={{ margin: '4px 0 0' }}>
-          Always verify with a qualified CA before relying on any mapping.
-        </p>
-        <p style={{ margin: '8px 0 0', color: 'var(--ink-faint)' }}>
-          Built by{' '}
-          <span style={{ fontWeight: 500, color: 'var(--ink-muted)' }}>MSB Digital Labs</span>
-          {' · '}
-          <a href="/privacy" style={{ color: 'var(--ink-faint)', textDecoration: 'underline' }}>Privacy Policy</a>
-        </p>
-      </footer>
+      <OnboardingTour />
     </div>
   )
 }
 
 function EmptyState({ query, onSuggest, tab }: { query: string; onSuggest: (q: string) => void; tab: string }) {
-  const sectionSuggestions = ['TDS', 'Deductions', 'salary', 'capital gains', '194C']
-  const formSuggestions = ['Form 16', 'Form 24Q', '15G', 'ITR', 'TDS certificate']
-  const suggestions = tab === 'sections' ? sectionSuggestions : formSuggestions
-
+  const sug = tab === 'sections'
+    ? ['TDS', 'Deductions', 'salary', 'capital gains', '194C']
+    : ['Form 16', 'Form 24Q', '15G', 'ITR', 'TDS certificate']
   return (
-    <div style={{
-      textAlign: 'center',
-      padding: '60px 20px',
-      color: 'var(--ink-muted)',
-    }}>
-      <div style={{ fontSize: '2.5rem', marginBottom: 12 }}>🔍</div>
-      <p style={{ fontSize: '1rem', fontWeight: 500, color: 'var(--ink)', marginBottom: 6 }}>
+    <div style={{ textAlign: 'center', padding: '60px 20px', color: 'var(--ink-3)' }}>
+      <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--ink)', marginBottom: 6 }}>
         No results for &ldquo;{query}&rdquo;
       </p>
-      <p style={{ fontSize: '0.875rem', color: 'var(--ink-muted)', marginBottom: 20 }}>
+      <p style={{ fontSize: 13.5, color: 'var(--ink-3)', marginBottom: 20 }}>
         Try a keyword, section number, or form name
       </p>
       <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap' }}>
-        {suggestions.map(s => (
-          <button
-            key={s}
-            onClick={() => onSuggest(s)}
-            style={{
-              fontSize: '0.8rem',
-              padding: '5px 12px',
-              borderRadius: 100,
-              border: '1px solid var(--border)',
-              background: 'var(--surface)',
-              color: 'var(--ink-muted)',
-              cursor: 'pointer',
-            }}
-          >
-            {s}
+        {sug.map(s => (
+          <button key={s} className="sugg" onClick={() => onSuggest(s)}>
+            <span className="sref">{s}</span>
           </button>
         ))}
       </div>

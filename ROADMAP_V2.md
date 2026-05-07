@@ -24,16 +24,14 @@ The current 100 sections focus on the most common ones. These categories are und
 
 ### V2 — High impact, relatively quick
 
-**1. Gap Auditor** *(already designed, not yet built)*
-The questionnaire flow is designed but not built. Gives a personalised compliance checklist in 2 minutes. Highest-value feature for CAs.
 
-**2. Bulk Document Scanner**
+**1. Bulk Document Scanner**
 Currently one doc at a time. Let users upload a ZIP or folder of PDFs/DOCX — get a combined report. Huge for audit teams working on 10+ client files.
 
-**3. Regime Comparison Calculator**
+**2. Regime Comparison Calculator**
 Old vs. new tax regime side-by-side for a given salary/income profile. CAs ask this for every salaried client. Pure client-side, no backend needed.
 
-**4. Section Bookmark / Save**
+**3. Section Bookmark / Save**
 Let users pin frequently used sections. LocalStorage-based, no auth required. Simple but high retention value for repeat CAs.
 
 ---
@@ -59,14 +57,11 @@ Let accounting software (Tally, Zoho Books) query the mapper via API. B2B distri
 
 ## Priority Order
 
-1. Gap Auditor
-2. Regime Comparison Calculator
-3. Bulk Document Scanner
-4. Section Bookmarks
-5. Client Report PDF
-6. Circular Tracker
-7. Multi-language
-8. CA Workspace
-9. API / Embed
-
-> **Note on Gap Auditor:** Every gap item must be sourced to a specific CBDT notification. Wrong gaps destroy CA trust permanently — accuracy over speed.
+1. Regime Comparison Calculator
+2. Bulk Document Scanner
+3. Section Bookmarks
+4. Client Report PDF
+5. Circular Tracker
+6. Multi-language
+7. CA Workspace
+8. API / Embed

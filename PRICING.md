@@ -19,7 +19,6 @@ Start small. One paid tier, three billing options. No complexity until V2 featur
 | **AaykarMitra (AI chat)** | 10 queries/day | Unlimited |
 | **Document Scanner** | ✗ | ✓ Unlimited |
 | **DOCX Export** | ✗ | ✓ |
-| **Gap Auditor** *(when built)* | ✗ | ✓ |
 | **Regime Comparison Calculator** *(when built)* | ✗ | ✓ |
 | **Section Bookmarks** *(when built)* | ✗ | ✓ |
 

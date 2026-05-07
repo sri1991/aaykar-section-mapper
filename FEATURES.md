@@ -156,6 +156,28 @@ Catches all common variants of section citations:
 
 ---
 
+## Tab 5 — Notice Analyzer
+
+**Upload any Income Tax notice and get structured extractions and a tailored document checklist.**
+
+### Extraction Engine
+Uses **Gemini 2.5 Pro** to analyze the full text of the notice and extract:
+- **Notice Type**: Automatic identification (e.g., 143(1), 148, 271)
+- **Key Parameters**: Assessment Year, Financial Year, PAN, Demand Amount, Deadline, DIN
+- **Cited Sections**: Automatically lists every Income Tax Act section mentioned in the document
+- **Plain-English Summary**: A 3-4 sentence "TL;DR" for the CA to understand the core issue instantly
+
+### CA Workflow Tool
+- **Key Claims**: Itemized list of specific discrepancies or claims the department is making
+- **Required Documents**: Generates a tailored list of 5-8 documents the CA should collect from the client to respond effectively
+- **Confidence Score**: Indicates the reliability of the extraction
+
+### Document Support
+- Supports **PDF** (with native text extraction + OCR fallback) and **DOCX**
+- OCR powered by Tesseract.js for scanned/low-quality PDFs
+
+---
+
 ## Infrastructure & Data
 
 ### Supabase schema
@@ -191,7 +213,6 @@ Catches all common variants of section citations:
 
 ## Not yet built (planned)
 
-- Gap Auditor (questionnaire → personalised compliance checklist)
 - CA-ready PDF export (jsPDF, email gate via Resend)
 - Authentication / saved sessions
 - Multi-document ingestion support
