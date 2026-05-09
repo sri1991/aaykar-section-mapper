@@ -606,7 +606,7 @@ input[type=range].whatif-slider { background: var(--border); }
   <!-- AY rules banner -->
   <div class="rules-banner">
     <span class="rules-banner-dot"></span>
-    <span><b>Showing AY 2025-26 rules</b> (Finance Act 2024, post-23-Jul-2024 capital-gains regime). Finance Act 2026 numbers pending verification before public launch.</span>
+    <span><b>Tax rules: FY 2026-27</b> (Income Tax Act 2025, Finance Act 2026). Source: EY FAQ May 2026. Capital gains rates and senior-citizen old-regime slabs are not in the EY source — flagged in the disclaimer.</span>
   </div>
 
   <!-- Resume banner (shown only when localStorage has a saved profile) -->
@@ -1100,7 +1100,8 @@ input[type=range].whatif-slider { background: var(--border); }
     </div>
 
     <div class="disclaimer">
-      <b>Indicative estimate.</b> Rental income, business/professional income and full perquisite valuation rules are not yet modelled. Capital gains use post-23-Jul-2024 rates (12.5% LTCG / 20% STCG equity); the indexation alternative for real estate is not modelled. Section number references (S.123, S.126, etc.) need verification against the gazetted Income Tax Act 2025 text. Need help with edge cases? <a href="#" style="color:var(--green);font-weight:700;">Talk to a FinminOS expert</a>.
+      <b>Heads up &mdash; regime choice timing.</b> Telling your employer which regime to use is provisional and only affects TDS. Your final regime choice is locked when you file your ITR (typically Jun-Jul 2027). Salaried taxpayers without business income can switch regimes year-on-year; business/professional taxpayers face lock-in restrictions (Section 202, IT Act 2025).<br><br>
+      <b>Indicative estimate.</b> Rental income, business/professional income and full perquisite valuation rules are not yet modelled. Capital gains use post-23-Jul-2024 rates (12.5% LTCG / 20% STCG equity); the indexation alternative for real estate is not modelled. Senior-citizen old-regime slabs are historical values pending FY 26-27 verification (EY source covers below-60 only). Section number references (S.123, S.126, etc.) need cross-walking against the gazetted Income Tax Act 2025 text. Need help with edge cases? <a href="#" style="color:var(--green);font-weight:700;">Talk to a FinminOS expert</a>.
     </div>
     <button class="btn-restart" onclick="restart()">← Recalculate with different inputs</button>
   </div>
@@ -1116,7 +1117,7 @@ input[type=range].whatif-slider { background: var(--border); }
 <footer class="site-footer">
   <div class="footer-inner">
     <div class="footer-logo">FinminOS</div>
-    <div class="footer-text">Prototype build · AY 2025-26 rules · Operating entity TBD</div>
+    <div class="footer-text">Prototype build · FY 2026-27 rules (EY FAQ May 2026) · Operating entity TBD</div>
   </div>
 </footer>
 
@@ -1126,34 +1127,40 @@ input[type=range].whatif-slider { background: var(--border); }
 // ════════════════════════════════════════════════════════════════════
 // SECTION 1 — RULES CONFIG (versioned per AY)
 // ════════════════════════════════════════════════════════════════════
-// AY 2025-26 = FY 2024-25 (Finance Act 2024).
-// Capital gains rates reflect post-23-July-2024 regime.
-// To add AY 2026-27: clone this object and update values. The engine
-// reads from these objects only — no inline constants.
-const RULES_AY_2025_26 = {
-  ay: '2025-26',
-  fy: '2024-25',
+// AY 2026-27 = FY 2026-27 (Income Tax Act 2025, Finance Act 2026).
+// Source: EY FAQ "New Tax Regime v/s Old Tax Regime" (May 2026).
+// Open items pending verification: senior/super-senior old-regime slabs,
+// post-FA-2026 capital-gains rates, and whether the 37% top surcharge
+// in new regime is correct or an EY doc error (changed under FA 2025).
+const RULES_AY_2026_27 = {
+  ay: '2026-27',
+  fy: '2026-27',
+  source: 'EY FAQ May 2026, post Finance Act 2026',
   newRegime: {
     standardDeduction: 75000,
     slabs: [
-      { upTo:  300000, rate: 0    },
-      { upTo:  700000, rate: 0.05 },
-      { upTo: 1000000, rate: 0.10 },
-      { upTo: 1200000, rate: 0.15 },
-      { upTo: 1500000, rate: 0.20 },
+      { upTo:  400000, rate: 0    },
+      { upTo:  800000, rate: 0.05 },
+      { upTo: 1200000, rate: 0.10 },
+      { upTo: 1600000, rate: 0.15 },
+      { upTo: 2000000, rate: 0.20 },
+      { upTo: 2400000, rate: 0.25 },
       { upTo: Infinity, rate: 0.30 }
     ],
-    rebate87a: { thresholdTI: 700000, maxRebate: 25000, marginalRelief: true },
+    // No tax if net taxable income (after std deduction) ≤ ₹12L.
+    // Rebate ceiling = slab tax at threshold = 60,000 (= 0%×4L + 5%×4L + 10%×4L).
+    rebate87a: { thresholdTI: 1200000, maxRebate: 60000, marginalRelief: true },
     surcharge: [
       { exceeds:  5000000, rate: 0.10 },
       { exceeds: 10000000, rate: 0.15 },
-      { exceeds: 20000000, rate: 0.25 }
-      // No 37% in new regime — capped at 25%.
+      { exceeds: 20000000, rate: 0.25 },
+      { exceeds: 50000000, rate: 0.37 }   // Per EY doc — 37% in NEW regime above ₹5Cr.
     ]
   },
   oldRegime: {
     standardDeduction: 50000,
-    // Slabs are age-dependent — function below picks per age band.
+    // Below-60 confirmed by EY doc. Senior/super-senior not in EY doc —
+    // historical values pending verification (flagged in UI).
     slabsBelow60: [
       { upTo:  250000, rate: 0    },
       { upTo:  500000, rate: 0.05 },
@@ -1171,7 +1178,7 @@ const RULES_AY_2025_26 = {
       { upTo: 1000000, rate: 0.20 },
       { upTo: Infinity, rate: 0.30 }
     ],
-    rebate87a: { thresholdTI: 500000, maxRebate: 12500, marginalRelief: false },
+    rebate87a: { thresholdTI: 500000, maxRebate: 12500, marginalRelief: true },
     surcharge: [
       { exceeds:  5000000, rate: 0.10 },
       { exceeds: 10000000, rate: 0.15 },
@@ -1180,16 +1187,14 @@ const RULES_AY_2025_26 = {
     ]
   },
   capitalGains: {
-    // Post 23-Jul-2024 rules (Finance (No.2) Act 2024)
-    ltcgEquity:     { rate: 0.125, exemption: 125000, sec: 'S.112A' }, // listed equity / equity MF
+    // Post-23-Jul-2024 rules (FA 2024). Not covered in EY doc — verify before production.
+    ltcgEquity:     { rate: 0.125, exemption: 125000, sec: 'S.112A' },
     stcgEquity:     { rate: 0.20,  exemption: 0,      sec: 'S.111A' },
-    ltcgDebt:       { rate: 0.125, exemption: 0,      sec: 'S.112'  }, // sold post 23-Jul-24, no indexation
-    ltcgRealEstate: { rate: 0.125, exemption: 0,      sec: 'S.112'  }, // simpler case (no indexation)
-    surchargeCap:   0.15  // Surcharge on CG-tax capped at 15% per IT Act
-    // STCG debt: taxed at slab rates → added to taxable income, not handled here.
+    ltcgDebt:       { rate: 0.125, exemption: 0,      sec: 'S.112'  },
+    ltcgRealEstate: { rate: 0.125, exemption: 0,      sec: 'S.112'  }, // no-indexation case
+    surchargeCap:   0.15  // Surcharge on listed-equity CG capped at 15%.
   },
   cess: 0.04,
-  // Section name → (legacy section, limit, regime visibility) — for UI labels and the optimizer (built in step 6).
   sections: {
     'S.19':       { legacy: 'Std deduction', regimes: ['old','new'] },
     'S.123':      { legacy: '80C',           limit: 150000, regimes: ['old'] },
@@ -1200,6 +1205,7 @@ const RULES_AY_2025_26 = {
     'S.22(2)(a)': { legacy: 'Home loan int', limit: 200000, regimes: ['old'] }
   }
 };
+
 
 // Mock prior-year filing for review-and-confirm mode.
 // Realistic ₹28L earner in Hyderabad — values supplied in the partner brief.
@@ -1572,7 +1578,7 @@ function computeAdvanceTax(annualTax) {
 // SECTION 3 — ENGINE TESTS (run on load, output to console + dev panel)
 // ════════════════════════════════════════════════════════════════════
 function runEngineTests() {
-  const R = RULES_AY_2025_26;
+  const R = RULES_AY_2026_27;
   const cases = [];
   const expect = (label, actual, expected, tol = 1) => {
     const pass = Math.abs(actual - expected) <= tol;
@@ -1580,99 +1586,110 @@ function runEngineTests() {
     return pass;
   };
 
-  // ─ 1. Slab tax — new regime at ₹15L exactly ─
-  // 0 + 0.05*4L + 0.10*3L + 0.15*2L + 0.20*3L = 0 + 20K + 30K + 30K + 60K = 1,40,000
-  expect('Slabs new @ ₹15L = ₹1,40,000',
-    applySlabs(1500000, R.newRegime.slabs), 140000);
+  // Tests are anchored to EY FAQ May 2026 hand-computed cases for FY 2026-27.
 
-  // ─ 2. Rebate at ₹7L exactly (new) — full rebate, tax = 0 ─
-  // Slab tax @ 7L = 0 + 0.05*4L = 20,000. Rebate = 20,000. Final = 0.
+  // ─ EY Case 1: ₹15L gross, no deductions, new regime → ₹97,500 total ─
+  // Net TI = 15,00,000 - 75,000 = 14,25,000.
+  // Slab: 0 + 5%×4L + 10%×4L + 15%×2.25L = 20K + 40K + 33,750 = 93,750.
+  // No rebate (TI > 12L, far past relief zone). No surcharge. Cess = 3,750.
   {
-    const slab = applySlabs(700000, R.newRegime.slabs);
-    const reb  = apply87ARebate(slab, 700000, R.newRegime.rebate87a);
-    expect('New regime @ ₹7L → rebate covers slab tax', slab - reb, 0);
+    const profile = { age: 'below60', gross: 1500000, basic: 0,
+      employerNpsPct: 0, mealVouchers: 0, mobileReimb: 0, uniformAllowance: 0 };
+    const r = computeRegimeTax(profile, 'new', R);
+    expect('EY Case 1 — ₹15L new, TI = ₹14.25L', r.taxableIncome, 1425000);
+    expect('EY Case 1 — slab tax = ₹93,750', r.slabTax, 93750);
+    expect('EY Case 1 — total = ₹97,500', r.total, 97500);
   }
 
-  // ─ 3. MARGINAL REBATE FIX — at ₹7,01,000, post-relief tax ≈ ₹1,000 ─
-  // v1 returns 0 rebate above 7L → tax = 20,100 + cess. Bug.
-  // With marginal relief: rebate = slabTax - (TI - 7L) = 20,100 - 1,000 = 19,100. Tax-after-rebate = 1,000.
+  // ─ EY Case 2: ₹12L gross, no deductions, new regime → ₹0 (rebate covers) ─
+  // Net TI = 11,25,000 (≤ 12L threshold). Slab = 0 + 20K + 32,500 = 52,500.
+  // Rebate = min(slabTax, 60,000) = 52,500. Tax after rebate = 0.
   {
-    const slab = applySlabs(701000, R.newRegime.slabs);
-    const reb  = apply87ARebate(slab, 701000, R.newRegime.rebate87a);
-    expect('Marginal rebate @ ₹7,01,000 → post-rebate tax = ₹1,000',
-      slab - reb, 1000);
+    const profile = { age: 'below60', gross: 1200000, basic: 0,
+      employerNpsPct: 0, mealVouchers: 0, mobileReimb: 0, uniformAllowance: 0 };
+    const r = computeRegimeTax(profile, 'new', R);
+    expect('EY Case 2 — ₹12L new, TI = ₹11.25L', r.taxableIncome, 1125000);
+    expect('EY Case 2 — full rebate, total = ₹0', r.total, 0);
   }
 
-  // ─ 4. Marginal rebate exits — at ₹7,30,000 the relief no longer binds ─
-  // Slab tax = 20K + 0.10*30K = 23,000. Income above threshold = 30,000.
-  // Relief rebate = 23,000 - 30,000 = -7,000 → clamped to 0. So rebate=0.
+  // ─ EY Case 3: ₹13L gross, new regime — marginal-rebate test → ₹26,000 ─
+  // Net TI = 12,25,000 (just above ₹12L threshold).
+  // Slab: 0 + 20K + 40K + 15%×25K = 63,750.
+  // reliefRebate = 63,750 - (12,25,000 - 12,00,000) = 63,750 - 25,000 = 38,750.
+  // Tax after rebate = 25,000. Cess = 1,000. Total = 26,000.
   {
-    const slab = applySlabs(730000, R.newRegime.slabs);
-    const reb  = apply87ARebate(slab, 730000, R.newRegime.rebate87a);
-    expect('Rebate exits @ ₹7,30,000 → rebate = 0', reb, 0);
+    const profile = { age: 'below60', gross: 1300000, basic: 0,
+      employerNpsPct: 0, mealVouchers: 0, mobileReimb: 0, uniformAllowance: 0 };
+    const r = computeRegimeTax(profile, 'new', R);
+    expect('EY Case 3 — ₹13L new, slab tax = ₹63,750', r.slabTax, 63750);
+    expect('EY Case 3 — marginal rebate = ₹38,750', r.rebate, 38750);
+    expect('EY Case 3 — total = ₹26,000', r.total, 26000);
   }
 
-  // ─ 5. Old regime rebate — ₹5L, full ₹12,500, no marginal relief ─
+  // ─ Marginal-rebate exit point: at ₹12.80L TI, relief no longer binds ─
+  // Slab @ 12.80L = 60K + 15%×80K = 72,000.
+  // reliefRebate = 72,000 - 80,000 = -8,000 → clamped to 0.
+  {
+    const slab = applySlabs(1280000, R.newRegime.slabs);
+    const reb  = apply87ARebate(slab, 1280000, R.newRegime.rebate87a);
+    expect('Rebate exits @ ₹12.80L → rebate = 0', reb, 0);
+  }
+
+  // ─ Old regime rebate — ₹5L, full ₹12,500 ─
   {
     const slab = applySlabs(500000, R.oldRegime.slabsBelow60);
     const reb  = apply87ARebate(slab, 500000, R.oldRegime.rebate87a);
     expect('Old regime rebate @ ₹5L', slab - reb, 0);
   }
 
-  // ─ 6. Surcharge marginal relief at ₹50L crossing (new regime) ─
-  // At TI = 50,01,000: slab tax = 14L + 0.30 * 35,01,000 = 14L + 10,50,300 = 24,50,300... wait let me recompute.
-  // Slabs: 0,3L,7L,10L,12L,15L → 0%,5%,10%,15%,20%,30%. Cumulative:
-  //   @ 3L = 0, @ 7L = 20K, @ 10L = 50K, @ 12L = 80K, @ 15L = 1,40,000.
-  //   Above 15L taxed @ 30%. So @ 50L = 1,40,000 + 0.30 * 35L = 1,40,000 + 10,50,000 = 11,90,000.
-  //   @ 50,01,000 = 11,90,000 + 0.30 * 1,000 = 11,90,300.
-  // Surcharge before relief: 11,90,300 * 10% = 1,19,030. Total = 13,09,330.
-  // Cap (relief): tax @ 50L (no surcharge, prev rate 0%) + (50,01,000 - 50,00,000) = 11,90,000 + 1,000 = 11,91,000.
-  // So surcharge gets capped to 11,91,000 - 11,90,300 = 700 (NOT 1,19,030).
+  // ─ Surcharge marginal relief at ₹50L crossing (new regime, FY 26-27) ─
+  // Slab @ 50L (new): 0+20K+40K+60K+80K+100K + 30%×26L = 3L + 7.8L = 10,80,000.
+  // @ 50,01,000: slab = 10,80,000 + 30%×1,000 = 10,80,300.
+  // Naive surcharge 10% = 1,08,030.
+  // Cap = 10,80,000 (no SC at 50L) + 1,000 = 10,81,000. Reduced SC = 700.
   {
-    const taxAR = 1190300;
-    const fn = (thr) => {
-      const t = applySlabs(thr, R.newRegime.slabs);
-      const r = apply87ARebate(t, thr, R.newRegime.rebate87a);
-      return Math.max(0, t - r);
-    };
+    const taxAR = 1080300;
+    const fn = (thr) => Math.max(0, applySlabs(thr, R.newRegime.slabs) - apply87ARebate(applySlabs(thr, R.newRegime.slabs), thr, R.newRegime.rebate87a));
     const sc = applySurcharge(taxAR, 5001000, R.newRegime.surcharge, fn);
-    expect('Surcharge marginal relief @ ₹50,01,000 (new) → reduced surcharge ≈ ₹700',
-      sc.surcharge, 700);
-    expect('Surcharge marginal relief flag set', sc.reliefApplied ? 1 : 0, 1);
+    expect('Surcharge marginal relief @ ₹50,01,000 new → ≈ ₹700', sc.surcharge, 700);
+    expect('Marginal relief flag set', sc.reliefApplied ? 1 : 0, 1);
   }
 
-  // ─ 7. Surcharge marginal relief at ₹1Cr crossing (old regime) ─
-  // @ 1Cr (old): 0+12,500+1,00,000+27,00,000 = 28,12,500. Surcharge @ 10% = 2,81,250.
-  // Total @ 1Cr = 30,93,750.
-  // @ 1,00,01,000: slab tax = 28,12,500 + 300 = 28,12,800. Surcharge @ 15% naive = 4,21,920. Total = 32,34,720.
-  // Cap = 28,12,500 * 1.10 + 1,000 = 30,94,750. Surcharge cap-bound = 30,94,750 - 28,12,800 = 2,81,950.
+  // ─ Surcharge marginal relief at ₹1Cr crossing (old regime, slabs unchanged) ─
+  // Slab @ 1Cr (old, <60) = 12,500 + 1,00,000 + 30%×90L = 28,12,500.
+  // @ 1,00,01,000: slab = 28,12,800. SC naive 15% = 4,21,920.
+  // Cap = 28,12,500 × 1.10 + 1,000 = 30,94,750. Reduced SC = 2,81,950.
   {
     const ti = 10001000;
     const slabT = applySlabs(ti, R.oldRegime.slabsBelow60);
-    const reb   = apply87ARebate(slabT, ti, R.oldRegime.rebate87a);
-    const taxAR = Math.max(0, slabT - reb);
-    const fn = (thr) => {
-      const t = applySlabs(thr, R.oldRegime.slabsBelow60);
-      const r = apply87ARebate(t, thr, R.oldRegime.rebate87a);
-      return Math.max(0, t - r);
-    };
+    const taxAR = Math.max(0, slabT - apply87ARebate(slabT, ti, R.oldRegime.rebate87a));
+    const fn = (thr) => Math.max(0, applySlabs(thr, R.oldRegime.slabsBelow60) - apply87ARebate(applySlabs(thr, R.oldRegime.slabsBelow60), thr, R.oldRegime.rebate87a));
     const sc = applySurcharge(taxAR, ti, R.oldRegime.surcharge, fn);
-    expect('Surcharge relief @ ₹1.0001Cr (old) → reduced surcharge', sc.surcharge, 281950, 50);
+    expect('Surcharge relief @ ₹1.0001Cr old → ≈ ₹2,81,950', sc.surcharge, 281950, 50);
   }
 
-  // ─ 8. Far above threshold — no relief ─
-  // @ 75L: slab tax (new) = 11,90,000 + 0.30 * 25L = 19,40,000. Surcharge 10% = 1,94,000.
+  // ─ Far above threshold — no relief — ₹75L new regime ─
+  // Slab @ 75L (new): 3L + 30%×51L = 18,30,000. Surcharge 10% = 1,83,000.
   {
     const ti = 7500000;
     const slabT = applySlabs(ti, R.newRegime.slabs);
     const fn = (thr) => Math.max(0, applySlabs(thr, R.newRegime.slabs) - apply87ARebate(applySlabs(thr, R.newRegime.slabs), thr, R.newRegime.rebate87a));
     const sc = applySurcharge(slabT, ti, R.newRegime.surcharge, fn);
-    expect('No relief @ ₹75L (new) → full 10% surcharge', sc.surcharge, 194000);
+    expect('No relief @ ₹75L new → full 10% surcharge = ₹1,83,000', sc.surcharge, 183000);
     expect('No relief flag false', sc.reliefApplied ? 1 : 0, 0);
   }
 
-  // ─ 9. End-to-end: ₹28L gross, full deductions, old regime ─
-  // Profile mirrors the MOCK profile (without CG).
+  // ─ FY 26-27 confirmation: 37% surcharge above ₹5Cr in NEW regime ─
+  // Per EY doc — point #4 of addendum. Tests v1's incorrect 25% cap is gone.
+  expect('New regime surcharge above ₹5Cr = 37%', getSurchargeRate(60000000, R.newRegime.surcharge), 0.37);
+
+  // ─ E2E ₹28L gross, full deductions, OLD regime — old slabs unchanged ─
+  // HRA exemption = min(5,60,000; 4,80,000-1,12,000=3,68,000; 0.40×11,20,000=4,48,000) = 3,68,000
+  // bothPerks = 1,12,000 (10% basic NPS) + 13,200 + 30,000 = 1,55,200
+  // oldOnly = 3,68,000 + 1,50,000 + 50,000 + 25,000 + 50,000 = 6,43,000
+  // Std ded (old) = 50,000. TI = 28L - 1,55,200 - 50K - 6,43,000 = 19,51,800.
+  // Slab (below60) = 12,500 + 1,00,000 + 30%×9,51,800 = 3,98,040.
+  // No SC (TI < 50L). Cess = 15,921.6. Total = 4,13,962.
   {
     const profile = {
       age: 'below60', gross: 2800000, basic: 1120000,
@@ -1685,38 +1702,26 @@ function runEngineTests() {
     };
     const old = computeRegimeTax(profile, 'old', R);
     const nu  = computeRegimeTax(profile, 'new', R);
-    // Old regime expected hand-calc:
-    //   HRA exemption = min(5,60,000; 4,80,000-1,12,000=3,68,000; 0.40*11,20,000=4,48,000) = 3,68,000
-    //   Both-regime perks = 1,12,000 (10% basic NPS) + 13,200 + 30,000 = 1,55,200
-    //   Old-only = 3,68,000 + 1,50,000 + 50,000 + 25,000 + 50,000 = 6,43,000
-    //   Std ded (old) = 50,000
-    //   TI = 28,00,000 - 1,55,200 - 50,000 - 6,43,000 = 19,51,800
-    //   Slab tax (old, <60): 0 + 12,500 + 1,00,000 + 0.30*9,51,800 = 1,12,500 + 2,85,540 = 3,98,040
-    //   No surcharge (TI < 50L). Cess = 3,98,040 * 0.04 = 15,921.60
-    //   Total = 4,13,962
-    expect('E2E ₹28L old regime — TI', old.taxableIncome, 1951800, 5);
-    expect('E2E ₹28L old regime — total', old.total, 413962, 50);
+    expect('E2E ₹28L old — TI', old.taxableIncome, 1951800, 5);
+    expect('E2E ₹28L old — total', old.total, 413962, 50);
 
-    // New regime expected:
-    //   Both-regime perks same = 1,55,200
-    //   Std ded (new) = 75,000
-    //   TI = 28,00,000 - 1,55,200 - 75,000 = 25,69,800
-    //   Slab tax (new): @ 15L = 1,40,000; above 15L @ 30%: 0.30 * 10,69,800 = 3,20,940
-    //   Total slab = 4,60,940. No rebate. No surcharge. Cess = 18,437.60.
-    //   Total = 4,79,378
-    expect('E2E ₹28L new regime — TI', nu.taxableIncome, 2569800, 5);
-    expect('E2E ₹28L new regime — total', nu.total, 479378, 50);
+    // New regime FY 26-27:
+    // TI = 28L - 1,55,200 - 75K = 25,69,800.
+    // Slab: 0+20K+40K+60K+80K+1L + 30%×(25,69,800-24L) = 3,00,000 + 50,940 = 3,50,940.
+    // No rebate, no SC. Cess = 14,037.6. Total = 3,64,978.
+    expect('E2E ₹28L new — TI', nu.taxableIncome, 2569800, 5);
+    expect('E2E ₹28L new — slab tax = ₹3,50,940', nu.slabTax, 350940, 5);
+    expect('E2E ₹28L new — total = ₹3,64,978', nu.total, 364978, 50);
   }
 
-  // ─ 10. Capital gains — ₹3L LTCG equity ─
+  // ─ Capital gains — ₹3L LTCG equity → ₹21,875 ─
   // Taxable = 3,00,000 - 1,25,000 = 1,75,000. Tax @ 12.5% = 21,875.
   {
     const cg = applyCapitalGainsTax({ ltcgEquity: 300000 }, R.capitalGains);
     expect('LTCG equity tax @ ₹3L', cg.ltcgEqTax, 21875);
   }
 
-  // ─ 11. Effective marginal rate — straightforward ₹28L old regime ─
-  // TI = ~19.5L (30% slab). No surcharge. Effective = 0.30 × 1.04 = 0.312.
+  // ─ Effective marginal rate — ₹28L old (30% slab, no SC) → 0.312 ─
   {
     const profile = {
       age: 'below60', gross: 2800000, basic: 1120000,
@@ -1730,22 +1735,20 @@ function runEngineTests() {
     expect('Effective marg. rate @ ₹28L old (30% slab, no SC)', Math.round(effRate * 1000), 312);
   }
 
-  // ─ 12. Effective marginal rate in 87A marginal-relief zone ─
-  // At TI ₹7.01L new regime, effective marginal rate ≈ 1.04 (each ₹ deducted reclaims ₹1 of tax + cess).
+  // ─ Effective marginal rate in 87A marginal-relief zone — ≈ 1.04 ─
+  // At TI ₹12,01,000 new regime, each ₹ deducted reclaims ₹1 of tax + cess.
+  // gross 12,76,000 - stdDed 75K = 12,01,000.
   {
-    const profile = {
-      age: 'below60', gross: 776000, basic: 0,
-      employerNpsPct: 0, mealVouchers: 0, mobileReimb: 0, uniformAllowance: 0
-    };
-    // gross 776,000 - stdDed 75,000 = 701,000
+    const profile = { age: 'below60', gross: 1276000, basic: 0,
+      employerNpsPct: 0, mealVouchers: 0, mobileReimb: 0, uniformAllowance: 0 };
     const r = computeRegimeTax(profile, 'new', R);
-    expect('TI sits at ₹7,01,000 (relief zone)', r.taxableIncome, 701000);
+    expect('TI sits at ₹12,01,000 (relief zone)', r.taxableIncome, 1201000);
     const effRate = getEffectiveMarginalRate(profile, 'new', r, R);
     expect('Effective marg. rate in 87A relief zone ≈ 1.04', Math.round(effRate * 1000), 1040);
   }
 
-  // ─ 13. Optimizer — under-used 80C surfaces as an opportunity ─
-  // Profile uses ₹50K of 80C → gap ₹1L. At 30% slab, expected impact ≈ ₹31,200.
+  // ─ Optimizer — under-used 80C surfaces as an opportunity ─
+  // Profile uses ₹50K of 80C → gap ₹1L. At 30% slab, impact ≈ ₹31,200.
   {
     const profile = {
       age: 'below60', gross: 2800000, basic: 1120000,
@@ -1761,7 +1764,7 @@ function runEngineTests() {
     expect('Optimizer 80C impact ≈ ₹31,200', top80c ? Math.round(top80c.impact) : 0, 31200, 100);
   }
 
-  // ─ 14. Advance tax — at ₹4.14L tax, schedule sums to total ─
+  // ─ Advance tax — at ₹4.14L tax, schedule sums to total; at ₹8K, no obligation ─
   {
     const adv = computeAdvanceTax(413962);
     expect('Advance tax triggered @ ₹4.14L tax', adv ? 1 : 0, 1);
@@ -1771,8 +1774,6 @@ function runEngineTests() {
       expect('Q1 ≈ 15% of total', adv.q1.amount, Math.round(413962 * 0.15));
     }
   }
-
-  // ─ 15. Advance tax — below ₹10K × 1/0.9 ≈ ₹11,111 → returns null ─
   expect('No advance tax @ ₹8K liability', computeAdvanceTax(8000) ? 1 : 0, 0);
 
   return cases;
@@ -1924,8 +1925,8 @@ function calculate() {
 // Run engine + render full result page. Used by both cold-start and review flows
 // and by what-if slider re-runs.
 function runCalculation(profile, isWhatIf) {
-  const oldR = computeRegimeTax(profile, 'old', RULES_AY_2025_26);
-  const newR = computeRegimeTax(profile, 'new', RULES_AY_2025_26);
+  const oldR = computeRegimeTax(profile, 'old', RULES_AY_2026_27);
+  const newR = computeRegimeTax(profile, 'new', RULES_AY_2026_27);
   state.currentProfile = profile;
   state.currentResult = { old: oldR, new: newR };
   renderResult(profile, oldR, newR, isWhatIf);
@@ -2009,7 +2010,7 @@ function renderAdvanceTax(annualTax) {
 
 // ── Optimizer / action list rendering ──
 function renderOptimizer(profile, regime, result) {
-  const opps = computeOpportunities(profile, regime, result, RULES_AY_2025_26);
+  const opps = computeOpportunities(profile, regime, result, RULES_AY_2026_27);
   const list = document.getElementById('opt-list');
   const titleEl = document.getElementById('opt-title');
 
@@ -2228,7 +2229,7 @@ window.addEventListener('DOMContentLoaded', () => {
   bindLiveDisplays();
   const tests = runEngineTests();
   renderTestPanel(tests);
-  console.group('FinminOS engine self-test (AY 2025-26)');
+  console.group('FinminOS engine self-test (FY 2026-27)');
   tests.forEach(c => {
     console[c.pass ? 'log' : 'error'](
       (c.pass ? '✓ ' : '✗ ') + c.label,
