@@ -425,6 +425,159 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
 .footer-logo { font-family: var(--font-display); font-size: 18px; color: rgba(255,251,244,0.7); margin-bottom: 6px; }
 .footer-text { font-size: 11.5px; color: rgba(255,251,244,0.45); line-height: 1.6; }
 
+/* RESUME BANNER */
+.resume-banner {
+  display: none;
+  background: var(--green-light);
+  border: 1px solid rgba(13,74,69,0.18);
+  border-radius: var(--r-md);
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+.resume-banner.show { display: flex; }
+.resume-text { font-size: 13px; color: var(--ink-2); line-height: 1.5; }
+.resume-text b { color: var(--green); }
+.resume-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.btn-mini {
+  border: 1px solid var(--border-mid);
+  background: var(--white);
+  color: var(--ink-2);
+  padding: 7px 14px;
+  border-radius: var(--r-sm);
+  font-family: var(--font-body);
+  font-size: 12.5px; font-weight: 700;
+  cursor: pointer; transition: all 0.15s;
+}
+.btn-mini:hover { background: var(--surface-2); }
+.btn-mini.primary { background: var(--green); color: white; border-color: var(--green); }
+.btn-mini.primary:hover { background: var(--green-mid); }
+
+/* ADVANCE TAX CALLOUT */
+.adv-tax {
+  background: linear-gradient(135deg, var(--amber-light), #FFE4A8);
+  border: 1px solid #F0CC6A;
+  border-radius: var(--r-md);
+  padding: 18px 22px;
+  margin-bottom: 12px;
+}
+.adv-tax-eyebrow { font-size: 10.5px; font-weight: 800; letter-spacing: 0.10em; text-transform: uppercase; color: var(--amber-mid); margin-bottom: 8px; }
+.adv-tax-title { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 12px; line-height: 1.4; }
+.adv-tax-title .mono { color: var(--amber-mid); }
+.adv-tax-schedule { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 12px; }
+.adv-tax-q { background: rgba(255,255,255,0.65); border-radius: var(--r-sm); padding: 9px 11px; }
+.adv-tax-q-label { font-size: 10px; font-weight: 700; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; margin-bottom: 4px; }
+.adv-tax-q-val { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--ink); }
+.adv-tax-q-date { font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+.adv-tax-foot { font-size: 11.5px; color: var(--ink-2); line-height: 1.5; }
+
+/* WHAT-IF SLIDERS */
+.whatif-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 20px 22px;
+  margin-bottom: 12px; box-shadow: var(--shadow-sm);
+}
+.whatif-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px; gap: 10px;
+}
+.whatif-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--amber-mid); }
+.whatif-title { font-family: var(--font-display); font-size: 18px; color: var(--green); margin-top: 4px; line-height: 1.3; }
+.whatif-row { margin-bottom: 16px; }
+.whatif-row:last-child { margin-bottom: 0; }
+.whatif-row-meta { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; gap: 10px; }
+.whatif-row-label { font-size: 13px; font-weight: 600; color: var(--ink-2); }
+.whatif-row-label .sec { color: var(--muted); font-family: var(--font-mono); font-size: 10.5px; margin-left: 4px; }
+.whatif-row-val { font-family: var(--font-mono); font-size: 14px; color: var(--green); font-weight: 600; white-space: nowrap; }
+input[type=range].whatif-slider { background: var(--border); }
+
+/* OPTIMIZER ACTION LIST */
+.opt-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 20px 22px;
+  margin-bottom: 12px; box-shadow: var(--shadow-sm);
+}
+.opt-eyebrow { font-size: 11px; font-weight: 800; letter-spacing: 0.07em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.opt-title { font-family: var(--font-display); font-size: 19px; color: var(--green); margin-bottom: 16px; line-height: 1.3; }
+.opt-empty { font-size: 13px; color: var(--muted); padding: 8px 0; line-height: 1.55; }
+.opt-list { display: flex; flex-direction: column; }
+.opt-item {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(13,74,69,0.05);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.opt-item:last-child { border-bottom: none; }
+.opt-rank { font-family: var(--font-mono); font-size: 14px; font-weight: 600; color: var(--muted-light); padding-top: 1px; }
+.opt-body { min-width: 0; }
+.opt-body-title { font-size: 14px; font-weight: 700; color: var(--ink); line-height: 1.35; margin-bottom: 5px; }
+.opt-body-caveat { font-size: 12px; color: var(--muted); line-height: 1.5; }
+.opt-body-caveat .sec { font-family: var(--font-mono); font-size: 10.5px; color: var(--green); background: var(--green-light); padding: 1px 5px; border-radius: 3px; margin-right: 4px; }
+.opt-tag {
+  display: inline-block; font-size: 9.5px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  border-radius: 4px; padding: 2px 6px;
+  margin-right: 6px; vertical-align: 1px;
+}
+.opt-tag.easy { background: var(--green-light); color: var(--green); }
+.opt-tag.struct { background: var(--amber-light); color: var(--amber-mid); }
+.opt-impact {
+  font-family: var(--font-mono); font-size: 14.5px; font-weight: 600;
+  color: var(--green); white-space: nowrap; padding-top: 1px;
+  text-align: right;
+}
+.opt-impact-sub { font-size: 10.5px; color: var(--muted-light); font-family: var(--font-body); font-weight: 500; margin-top: 2px; }
+
+/* REVIEW MODE CARDS */
+.review-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+  margin-bottom: 12px; box-shadow: var(--shadow-sm);
+}
+.review-card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; gap: 12px; }
+.review-card-title { font-family: var(--font-display); font-size: 19px; color: var(--green); }
+.review-card-tag {
+  font-size: 10.5px; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: var(--muted);
+  background: var(--surface-2);
+  border-radius: 99px; padding: 3px 10px;
+  flex-shrink: 0;
+}
+.review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px 18px; }
+.review-li { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; align-items: baseline; gap: 8px; }
+.review-li-label { color: var(--muted); }
+.review-li-val { font-family: var(--font-mono); font-weight: 600; color: var(--ink); white-space: nowrap; }
+.review-projection {
+  font-size: 12px; color: var(--green);
+  background: var(--green-light);
+  padding: 8px 12px; border-radius: var(--r-sm);
+  margin-top: 12px; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+}
+.review-projection-input {
+  width: 50px;
+  border: 1px solid rgba(13,74,69,0.25);
+  border-radius: 4px;
+  padding: 2px 4px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--white);
+  text-align: right;
+  color: var(--green);
+}
+
 /* RESPONSIVE */
 @media (max-width: 520px) {
   .page { padding: 24px 16px 60px; }
@@ -432,6 +585,10 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
   .hero-title { font-size: 26px; }
   .res-saving { font-size: 32px; }
   .tax-grid { grid-template-columns: 1fr; }
+  .adv-tax-schedule { grid-template-columns: repeat(2, 1fr); }
+  .review-grid { grid-template-columns: 1fr; }
+  .opt-item { grid-template-columns: 22px 1fr; }
+  .opt-impact { grid-column: 2 / 3; padding-top: 4px; text-align: left; }
 }
 </style>
 </head>
@@ -450,6 +607,17 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
   <div class="rules-banner">
     <span class="rules-banner-dot"></span>
     <span><b>Showing AY 2025-26 rules</b> (Finance Act 2024, post-23-Jul-2024 capital-gains regime). Finance Act 2026 numbers pending verification before public launch.</span>
+  </div>
+
+  <!-- Resume banner (shown only when localStorage has a saved profile) -->
+  <div class="resume-banner" id="resume-banner">
+    <div class="resume-text">
+      <b>Welcome back.</b> <span id="resume-meta">We saved your last plan from earlier this session.</span>
+    </div>
+    <div class="resume-actions">
+      <button class="btn-mini" onclick="discardSaved()">Start fresh</button>
+      <button class="btn-mini primary" onclick="resumeSaved()">Resume plan</button>
+    </div>
   </div>
 
   <!-- Mode toggle -->
@@ -476,15 +644,80 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
   <!-- Hero -->
   <div class="hero">
     <h1 class="hero-title" id="hero-title">Plan next year's tax <em>before</em> it's too late.</h1>
-    <p class="hero-sub" id="hero-sub">Six steps. We model both regimes, surcharge, capital gains and rebate marginal relief — then show what specific actions would reduce your tax.</p>
+    <p class="hero-sub" id="hero-sub">Five steps. We model both regimes, surcharge, capital gains and rebate marginal relief &mdash; then show what specific actions would reduce your tax.</p>
   </div>
 
-  <!-- Review-and-confirm placeholder (built in step 8) -->
+  <!-- Review-and-confirm mode (paying-customer dashboard simulation) -->
   <div id="review-section" style="display:none;">
-    <div class="card">
-      <div class="q-label">Review &amp; Confirm Mode</div>
-      <div class="q-title">Coming in step 8.</div>
-      <div class="q-sub">This mode will pre-populate cards from the prior-year ITR and let you adjust projections. The shared rate engine is already wired up — only the UI for this view is pending. Switch back to <b>Cold-start</b> to test the engine end-to-end.</div>
+
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-card-title">Salary income</div>
+        <div class="review-card-tag">From AY 2025-26 Form 16</div>
+      </div>
+      <div class="review-grid">
+        <div class="review-li"><span class="review-li-label">Gross salary</span><span class="review-li-val" id="rv-gross">&#8377;28,00,000</span></div>
+        <div class="review-li"><span class="review-li-label">Basic salary</span><span class="review-li-val" id="rv-basic">&#8377;11,20,000</span></div>
+      </div>
+      <div class="review-projection">
+        <span>Projected hike for FY 2026-27 &mdash;</span>
+        <input type="number" class="review-projection-input" id="rv-hike" value="12" min="0" max="100" step="1" oninput="updateReviewProjections()">
+        <span>%</span>
+        <span style="margin-left:auto">Projected gross: <b id="rv-projected-gross">&#8377;31.36L</b></span>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-card-title">HRA &amp; rent</div>
+        <div class="review-card-tag">Hyderabad &middot; non-metro</div>
+      </div>
+      <div class="review-grid">
+        <div class="review-li"><span class="review-li-label">HRA received</span><span class="review-li-val" id="rv-hra">&#8377;5,60,000</span></div>
+        <div class="review-li"><span class="review-li-label">Rent paid</span><span class="review-li-val" id="rv-rent">&#8377;4,80,000</span></div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-card-title">Deductions claimed</div>
+        <div class="review-card-tag">Old regime last year</div>
+      </div>
+      <div class="review-grid">
+        <div class="review-li"><span class="review-li-label">80C (S.123)</span><span class="review-li-val" id="rv-80c">&#8377;1,50,000</span></div>
+        <div class="review-li"><span class="review-li-label">NPS Tier-1 (S.124(3))</span><span class="review-li-val" id="rv-nps">&#8377;50,000</span></div>
+        <div class="review-li"><span class="review-li-label">80D self (S.126)</span><span class="review-li-val" id="rv-80d-self">&#8377;25,000</span></div>
+        <div class="review-li"><span class="review-li-label">80D parents (sr.)</span><span class="review-li-val" id="rv-80d-par">&#8377;50,000</span></div>
+      </div>
+      <div class="review-projection" style="background:var(--surface-2);color:var(--ink-2);">Same deduction profile carried into FY 2026-27. You can adjust on the result page using what-if sliders.</div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-card-title">Capital gains &amp; interest income</div>
+        <div class="review-card-tag">From AIS / Schedule CG</div>
+      </div>
+      <div class="review-grid">
+        <div class="review-li"><span class="review-li-label">LTCG equity</span><span class="review-li-val" id="rv-ltcg-eq">&#8377;80,000</span></div>
+        <div class="review-li"><span class="review-li-label">FD interest</span><span class="review-li-val" id="rv-fd">&#8377;32,000</span></div>
+        <div class="review-li"><span class="review-li-label">Savings interest</span><span class="review-li-val" id="rv-sav">&#8377;12,000</span></div>
+        <div class="review-li"><span class="review-li-label">Last year's regime</span><span class="review-li-val">Old</span></div>
+      </div>
+    </div>
+
+    <div class="review-card">
+      <div class="review-card-header">
+        <div class="review-card-title">Last year's tax outgo</div>
+        <div class="review-card-tag">Per ITR-1 filed Jun 2026</div>
+      </div>
+      <div class="review-grid">
+        <div class="review-li"><span class="review-li-label">Total tax paid (old)</span><span class="review-li-val">&#8377;3,48,000</span></div>
+        <div class="review-li"><span class="review-li-label">Effective rate</span><span class="review-li-val">12.4%</span></div>
+      </div>
+    </div>
+
+    <div class="btn-row" style="margin-top:18px;">
+      <button class="btn-next amber" onclick="calculateFromReview()">Re-run for FY 2026-27 &rarr;</button>
     </div>
   </div>
 
@@ -495,20 +728,21 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
     <div class="progress-wrap" id="progress-wrap">
       <div class="progress-meta">
         <span class="progress-lbl">Your progress</span>
-        <span class="progress-frac" id="progress-fraction">1 / 4</span>
+        <span class="progress-frac" id="progress-fraction">1 / 5</span>
       </div>
       <div class="progress-track">
         <div class="pseg active" id="ps0"></div>
         <div class="pseg" id="ps1"></div>
         <div class="pseg" id="ps2"></div>
         <div class="pseg" id="ps3"></div>
+        <div class="pseg" id="ps4"></div>
       </div>
     </div>
 
     <!-- STEP 0: Income & age -->
     <div class="step active" id="step0">
       <div class="card">
-        <div class="q-label">Step 1 of 4 — Salary income</div>
+        <div class="q-label">Step 1 of 5 — Salary income</div>
         <div class="q-title">Tell us about your salary.</div>
         <div class="q-sub">We need gross salary (CTC) and basic pay separately — basic drives HRA, NPS, EPF computations.</div>
 
@@ -556,7 +790,7 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
     <!-- STEP 1: Housing -->
     <div class="step" id="step1">
       <div class="card">
-        <div class="q-label">Step 2 of 4 — Housing</div>
+        <div class="q-label">Step 2 of 5 — Housing</div>
         <div class="q-title">Rent paid &amp; home loan interest.</div>
         <div class="q-sub">Replacing v1's HRA hardcoding with real inputs. HRA exemption is computed from your actual rent. Both deductions apply only in the old regime.</div>
 
@@ -616,7 +850,7 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
     <!-- STEP 2: Deductions (amount inputs, not checkboxes) -->
     <div class="step" id="step2">
       <div class="card">
-        <div class="q-label">Step 3 of 4 — Deductions</div>
+        <div class="q-label">Step 3 of 5 — Deductions</div>
         <div class="q-title">Investments &amp; insurance — actual amounts.</div>
         <div class="q-sub">v1 treated these as on/off. Real planning needs the rupee figures: ₹50K of EPF should not get the same treatment as ₹1.5L of EPF + ELSS + LIC.</div>
 
@@ -685,7 +919,7 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
     <!-- STEP 3: CTC structure (both regimes) -->
     <div class="step" id="step3">
       <div class="card">
-        <div class="q-label">Step 4 of 4 — CTC structure</div>
+        <div class="q-label">Step 4 of 5 — CTC structure</div>
         <div class="q-title">Employer perks &amp; NPS.</div>
         <div class="q-sub">These reduce taxable salary in <b>both</b> regimes — including new. Often the highest-leverage lever for new-regime employees.</div>
 
@@ -727,7 +961,82 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
       </div>
       <div class="btn-row">
         <button class="btn-back" onclick="goTo(2)">← Back</button>
-        <button class="btn-next amber" onclick="calculate()">See My Result →</button>
+        <button class="btn-next" onclick="goTo(4)">Continue →</button>
+      </div>
+    </div>
+
+    <!-- STEP 4: Other income & capital gains -->
+    <div class="step" id="step4">
+      <div class="card">
+        <div class="q-label">Step 5 of 5 &mdash; Other income</div>
+        <div class="q-title">Capital gains, interest, rental income.</div>
+        <div class="q-sub">For most salaried filers these are zero. If you trade equity / hold FDs / sold property, fill them in &mdash; they materially affect the regime decision.</div>
+
+        <div class="field">
+          <label class="field-label" for="in-fd">Fixed deposit interest (annual)</label>
+          <div class="amount-input-wrap">
+            <span class="amount-prefix">&#8377;</span>
+            <input class="amount-input" type="number" id="in-fd" min="0" step="1000" value="0" inputmode="numeric">
+            <span class="amount-suffix">slab rate</span>
+          </div>
+          <div class="field-hint">Adds to your taxable income at slab rates. 80TTB deduction (S.153) covers up to &#8377;50K for senior citizens; not available below 60.</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="in-savings">Savings account interest (annual)</label>
+          <div class="amount-input-wrap">
+            <span class="amount-prefix">&#8377;</span>
+            <input class="amount-input" type="number" id="in-savings" min="0" step="500" value="0" inputmode="numeric">
+            <span class="amount-suffix">slab rate</span>
+          </div>
+          <div class="field-hint">80TTA deduction (S.153) up to &#8377;10K applies in old regime &mdash; modelled separately in step 6 of the build.</div>
+        </div>
+
+        <div class="q-divider"></div>
+
+        <div class="field">
+          <label class="field-label" for="in-ltcg-eq">LTCG &mdash; listed equity / equity MF <span class="sec-ref">S.112A</span></label>
+          <div class="amount-input-wrap">
+            <span class="amount-prefix">&#8377;</span>
+            <input class="amount-input" type="number" id="in-ltcg-eq" min="0" step="1000" value="0" inputmode="numeric">
+            <span class="amount-suffix">12.5% above &#8377;1.25L</span>
+          </div>
+          <div class="field-hint">Holding period &gt; 12 months. First &#8377;1.25L exempt; balance taxed at 12.5% (post-23-Jul-2024).</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="in-stcg-eq">STCG &mdash; listed equity / equity MF <span class="sec-ref">S.111A</span></label>
+          <div class="amount-input-wrap">
+            <span class="amount-prefix">&#8377;</span>
+            <input class="amount-input" type="number" id="in-stcg-eq" min="0" step="1000" value="0" inputmode="numeric">
+            <span class="amount-suffix">20% flat</span>
+          </div>
+          <div class="field-hint">Holding period &le; 12 months. Flat 20% (post-23-Jul-2024). Cannot be reduced by deductions or rebate.</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="in-ltcg-debt">LTCG &mdash; debt MF / bonds <span class="sec-ref">S.112</span></label>
+          <div class="amount-input-wrap">
+            <span class="amount-prefix">&#8377;</span>
+            <input class="amount-input" type="number" id="in-ltcg-debt" min="0" step="1000" value="0" inputmode="numeric">
+            <span class="amount-suffix">12.5% no indexation</span>
+          </div>
+          <div class="field-hint">Sold post-23-Jul-2024. Pre-Apr-2023 acquisitions sold at slab rate &mdash; not modelled here.</div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="in-ltcg-re">LTCG &mdash; real estate <span class="sec-ref">S.112</span></label>
+          <div class="amount-input-wrap">
+            <span class="amount-prefix">&#8377;</span>
+            <input class="amount-input" type="number" id="in-ltcg-re" min="0" step="10000" value="0" inputmode="numeric">
+            <span class="amount-suffix">12.5% no indexation</span>
+          </div>
+          <div class="field-hint">Modelling the no-indexation case. Indexation alternative (20%) needs a separate cost-base input &mdash; pending in step 5+.</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn-back" onclick="goTo(3)">&larr; Back</button>
+        <button class="btn-next amber" onclick="calculate()">See My Result &rarr;</button>
       </div>
     </div>
 
@@ -742,17 +1051,43 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
       <div class="res-note" id="res-note"></div>
     </div>
 
+    <!-- Advance tax callout (conditional) -->
+    <div class="adv-tax" id="adv-tax" style="display:none;">
+      <div class="adv-tax-eyebrow">Advance tax obligation flagged</div>
+      <div class="adv-tax-title">Estimated <span class="mono" id="adv-tax-total">&mdash;</span> in advance tax due across FY 2026-27.</div>
+      <div class="adv-tax-schedule" id="adv-tax-schedule"></div>
+      <div class="adv-tax-foot">Advance tax kicks in once estimated annual liability exceeds &#8377;10,000 (Section 208). Salaried employees with adequate TDS may not need to pay separately &mdash; check Form 26AS each quarter.</div>
+    </div>
+
     <div class="tax-grid">
       <div class="tax-card">
         <div class="tax-card-label">Old regime tax</div>
-        <div class="tax-card-val" id="old-tax-display">—</div>
+        <div class="tax-card-val" id="old-tax-display">&mdash;</div>
         <div class="tax-card-sub">incl. surcharge + 4% cess</div>
       </div>
       <div class="tax-card">
         <div class="tax-card-label">New regime tax</div>
-        <div class="tax-card-val" id="new-tax-display">—</div>
+        <div class="tax-card-val" id="new-tax-display">&mdash;</div>
         <div class="tax-card-sub">incl. surcharge + 4% cess</div>
       </div>
+    </div>
+
+    <!-- What-if sliders -->
+    <div class="whatif-card">
+      <div class="whatif-head">
+        <div>
+          <div class="whatif-eyebrow">What-if explorer</div>
+          <div class="whatif-title">Adjust the highest-leverage levers &mdash; numbers update live.</div>
+        </div>
+      </div>
+      <div id="whatif-rows"></div>
+    </div>
+
+    <!-- Optimizer / action list -->
+    <div class="opt-card" id="opt-card">
+      <div class="opt-eyebrow">Top opportunities</div>
+      <div class="opt-title" id="opt-title">Ranked by rupee impact at your marginal rate.</div>
+      <div class="opt-list" id="opt-list"></div>
     </div>
 
     <div class="breakdown">
@@ -765,7 +1100,7 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
     </div>
 
     <div class="disclaimer">
-      <b>Indicative estimate.</b> Capital gains, rental income, business income and perquisite valuation rules are not yet modelled in cold-start mode (added in step 5 of the build). Section number references (S.123, S.126, etc.) need verification against the gazetted Income Tax Act 2025 text. Need help with edge cases? <a href="#" style="color:var(--green);font-weight:700;">Talk to a FinminOS expert</a>.
+      <b>Indicative estimate.</b> Rental income, business/professional income and full perquisite valuation rules are not yet modelled. Capital gains use post-23-Jul-2024 rates (12.5% LTCG / 20% STCG equity); the indexation alternative for real estate is not modelled. Section number references (S.123, S.126, etc.) need verification against the gazetted Income Tax Act 2025 text. Need help with edge cases? <a href="#" style="color:var(--green);font-weight:700;">Talk to a FinminOS expert</a>.
     </div>
     <button class="btn-restart" onclick="restart()">← Recalculate with different inputs</button>
   </div>
@@ -864,6 +1199,26 @@ const RULES_AY_2025_26 = {
     'S.129':      { legacy: '80E edu loan',  regimes: ['old'] },
     'S.22(2)(a)': { legacy: 'Home loan int', limit: 200000, regimes: ['old'] }
   }
+};
+
+// Mock prior-year filing for review-and-confirm mode.
+// Realistic ₹28L earner in Hyderabad — values supplied in the partner brief.
+const MOCK_PRIOR_YEAR_PROFILE = {
+  name: 'Ananya Sharma',
+  filingYear: 'AY 2025-26',
+  age: 'below60',
+  gross: 2800000, basic: 1120000,
+  hraReceived: 560000, rentPaid: 480000, isMetro: false,
+  homeLoanInterest: 0,
+  s80c: 150000, nps80ccd1b: 50000,
+  s80dSelf: 25000, s80dSelfSenior: false,
+  s80dParents: 50000, s80dParentsSenior: true,
+  eduLoanInterest: 0,
+  employerNpsPct: 10, mealVouchers: 13200, mobileReimb: 30000, uniformAllowance: 0,
+  fdInterest: 32000, savingsInterest: 12000, stcgDebt: 0,
+  ltcgEquity: 80000, stcgEquity: 0, ltcgDebt: 0, ltcgRealEstate: 0,
+  regimeUsed: 'old',
+  taxPaidLastYear: 348000
 };
 
 // ════════════════════════════════════════════════════════════════════
@@ -1070,6 +1425,150 @@ function computeRegimeTax(profile, regime, rules) {
 }
 
 // ════════════════════════════════════════════════════════════════════
+// SECTION 2B — PLANNER UTILITIES (marginal rate, optimizer, advance tax)
+// ════════════════════════════════════════════════════════════════════
+
+// Effective marginal rate per rupee of additional deduction.
+// = slabRate × (1 + surchargeRate) × (1 + cessRate)
+// Special case: if TI is in the 87A marginal-rebate-relief zone,
+// each rupee of deduction reclaims a full rupee of tax (≈100% effective).
+function getEffectiveMarginalRate(profile, regime, result, rules) {
+  const cfg = regime === 'new' ? rules.newRegime : rules.oldRegime;
+  const slabs = regime === 'new' ? cfg.slabs : getOldRegimeSlabs(profile.age, rules);
+  const ti = result.taxableIncome;
+
+  // Slab marginal rate at current TI.
+  let slabRate = 0;
+  let prev = 0;
+  for (const s of slabs) {
+    if (ti <= s.upTo) { slabRate = s.rate; break; }
+    prev = s.upTo;
+  }
+  // Above the topmost finite slab → top rate.
+  if (ti > slabs[slabs.length - 2].upTo) slabRate = slabs[slabs.length - 1].rate;
+
+  // 87A marginal-relief zone — effective marginal rate ≈ 100%.
+  if (cfg.rebate87a.marginalRelief && ti > cfg.rebate87a.thresholdTI && result.rebate > 0) {
+    return 1.00 * (1 + rules.cess); // ~104%
+  }
+
+  return slabRate * (1 + result.surchargeRate) * (1 + rules.cess);
+}
+
+// Generate ranked list of tax-saving opportunities given current profile + result.
+// Each opportunity: { title, delta, impact, sec, ease, caveat }
+//   delta  = additional deduction/contribution in rupees
+//   impact = estimated rupee saving (delta × effective marginal rate)
+//   ease   = 'easy' (no behavioral change beyond a transfer) or 'struct' (CTC rejig / lock-in)
+function computeOpportunities(profile, regime, result, rules) {
+  const margRate = getEffectiveMarginalRate(profile, regime, result, rules);
+  const opps = [];
+
+  // 80C gap (old regime only)
+  if (regime === 'old') {
+    const cap = 150000, used = Math.min(profile.s80c || 0, cap);
+    const gap = cap - used;
+    if (gap >= 5000) opps.push({
+      title: 'Top up Section 80C by ' + fmt(gap),
+      delta: gap, impact: gap * margRate, sec: 'S.123',
+      ease: 'easy',
+      caveat: 'Currently using ' + fmt(used) + ' of ' + fmt(cap) + ' limit. ELSS (3-yr lock-in), PPF top-up or EPF VPF.'
+    });
+  }
+
+  // NPS Tier-1 own contribution gap (old regime only)
+  if (regime === 'old') {
+    const cap = 50000, used = Math.min(profile.nps80ccd1b || 0, cap);
+    const gap = cap - used;
+    if (gap >= 5000) opps.push({
+      title: 'Add NPS Tier-1 own contribution of ' + fmt(gap),
+      delta: gap, impact: gap * margRate, sec: 'S.124(3)',
+      ease: 'easy',
+      caveat: 'Over and above the ₹1.5L 80C cap. Lock-in until 60. Suitable if retirement-saving aligns.'
+    });
+  }
+
+  // Employer NPS — both regimes, very high leverage.
+  const empNpsPct = profile.employerNpsPct || 0;
+  if (empNpsPct < 10 && profile.basic > 0) {
+    const additional = Math.round((10 - empNpsPct) / 100 * profile.basic);
+    opps.push({
+      title: 'Restructure CTC to add employer NPS at 10% of basic',
+      delta: additional, impact: additional * margRate, sec: 'S.124(1)',
+      ease: 'struct',
+      caveat: 'Available in BOTH regimes. ' + fmt(additional) + ' redirected from existing CTC. Negotiate with HR before April.'
+    });
+  }
+
+  // 80D parents (old regime)
+  if (regime === 'old') {
+    const cap = profile.s80dParentsSenior ? 50000 : 25000;
+    const used = Math.min(profile.s80dParents || 0, cap);
+    const gap = cap - used;
+    if (gap >= 5000) opps.push({
+      title: 'Health insurance for parents — add ' + fmt(gap),
+      delta: gap, impact: gap * margRate, sec: 'S.126',
+      ease: 'easy',
+      caveat: profile.s80dParentsSenior
+        ? 'Senior-citizen cap ₹50K. Genuinely useful coverage, not just tax-driven.'
+        : 'Cap ₹25K (₹50K once parents turn 60).'
+    });
+  }
+
+  // 80D self/family (old regime)
+  if (regime === 'old') {
+    const cap = profile.s80dSelfSenior ? 50000 : 25000;
+    const used = Math.min(profile.s80dSelf || 0, cap);
+    const gap = cap - used;
+    if (gap >= 5000) opps.push({
+      title: 'Health insurance for self & family — add ' + fmt(gap),
+      delta: gap, impact: gap * margRate, sec: 'S.126',
+      ease: 'easy',
+      caveat: 'Cap ' + fmt(cap) + '. Many salaried have employer coverage but no personal policy — gap risk if you change jobs.'
+    });
+  }
+
+  // Home loan interest awareness (old regime, 0 currently)
+  if (regime === 'old' && (profile.homeLoanInterest || 0) === 0) {
+    // Not actionable from a calculator; mention only if clearly leverage-positive.
+    // Skip — not a behavioral suggestion we can credibly make.
+  }
+
+  // Meal vouchers — both regimes, easy CTC tweak
+  if ((profile.mealVouchers || 0) < 13200) {
+    const gap = 13200 - (profile.mealVouchers || 0);
+    opps.push({
+      title: 'Add Sodexo / meal vouchers — ' + fmt(gap) + '/yr',
+      delta: gap, impact: gap * margRate, sec: 'S.17(2)(e)',
+      ease: 'struct',
+      caveat: 'Fully exempt in both regimes. ₹50/meal × 22 working days × 12 months ≈ ₹13,200.'
+    });
+  }
+
+  // Sort by rupee impact descending; top 6 by default.
+  opps.sort((a, b) => b.impact - a.impact);
+  return opps.slice(0, 6).map((o, i) => ({ ...o, rank: i + 1 }));
+}
+
+// Advance tax obligation per Section 208/211.
+// Threshold: estimated annual liability × 0.9 ≥ ₹10,000.
+// Schedule: Q1 15% (15-Jun), Q2 cumulative 45% (15-Sep), Q3 75% (15-Dec), Q4 100% (15-Mar).
+function computeAdvanceTax(annualTax) {
+  if (annualTax * 0.9 < 10000) return null;
+  const q1 = Math.round(annualTax * 0.15);
+  const q2 = Math.round(annualTax * 0.45) - q1;
+  const q3 = Math.round(annualTax * 0.75) - q1 - q2;
+  const q4 = annualTax - q1 - q2 - q3;
+  return {
+    total: annualTax,
+    q1: { amount: q1, dueDate: '15 Jun', cumulative: q1 },
+    q2: { amount: q2, dueDate: '15 Sep', cumulative: q1 + q2 },
+    q3: { amount: q3, dueDate: '15 Dec', cumulative: q1 + q2 + q3 },
+    q4: { amount: q4, dueDate: '15 Mar', cumulative: annualTax }
+  };
+}
+
+// ════════════════════════════════════════════════════════════════════
 // SECTION 3 — ENGINE TESTS (run on load, output to console + dev panel)
 // ════════════════════════════════════════════════════════════════════
 function runEngineTests() {
@@ -1216,6 +1715,66 @@ function runEngineTests() {
     expect('LTCG equity tax @ ₹3L', cg.ltcgEqTax, 21875);
   }
 
+  // ─ 11. Effective marginal rate — straightforward ₹28L old regime ─
+  // TI = ~19.5L (30% slab). No surcharge. Effective = 0.30 × 1.04 = 0.312.
+  {
+    const profile = {
+      age: 'below60', gross: 2800000, basic: 1120000,
+      hraReceived: 560000, rentPaid: 480000, isMetro: false,
+      s80c: 150000, nps80ccd1b: 50000,
+      s80dSelf: 25000, s80dParents: 50000, s80dParentsSenior: true,
+      employerNpsPct: 10, mealVouchers: 13200, mobileReimb: 30000
+    };
+    const r = computeRegimeTax(profile, 'old', R);
+    const effRate = getEffectiveMarginalRate(profile, 'old', r, R);
+    expect('Effective marg. rate @ ₹28L old (30% slab, no SC)', Math.round(effRate * 1000), 312);
+  }
+
+  // ─ 12. Effective marginal rate in 87A marginal-relief zone ─
+  // At TI ₹7.01L new regime, effective marginal rate ≈ 1.04 (each ₹ deducted reclaims ₹1 of tax + cess).
+  {
+    const profile = {
+      age: 'below60', gross: 776000, basic: 0,
+      employerNpsPct: 0, mealVouchers: 0, mobileReimb: 0, uniformAllowance: 0
+    };
+    // gross 776,000 - stdDed 75,000 = 701,000
+    const r = computeRegimeTax(profile, 'new', R);
+    expect('TI sits at ₹7,01,000 (relief zone)', r.taxableIncome, 701000);
+    const effRate = getEffectiveMarginalRate(profile, 'new', r, R);
+    expect('Effective marg. rate in 87A relief zone ≈ 1.04', Math.round(effRate * 1000), 1040);
+  }
+
+  // ─ 13. Optimizer — under-used 80C surfaces as an opportunity ─
+  // Profile uses ₹50K of 80C → gap ₹1L. At 30% slab, expected impact ≈ ₹31,200.
+  {
+    const profile = {
+      age: 'below60', gross: 2800000, basic: 1120000,
+      hraReceived: 560000, rentPaid: 480000, isMetro: false,
+      s80c: 50000, nps80ccd1b: 50000,
+      s80dSelf: 25000, s80dParents: 50000, s80dParentsSenior: true,
+      employerNpsPct: 10, mealVouchers: 13200, mobileReimb: 30000
+    };
+    const r = computeRegimeTax(profile, 'old', R);
+    const opps = computeOpportunities(profile, 'old', r, R);
+    const top80c = opps.find(o => o.sec === 'S.123');
+    expect('Optimizer flags 80C gap', top80c ? 1 : 0, 1);
+    expect('Optimizer 80C impact ≈ ₹31,200', top80c ? Math.round(top80c.impact) : 0, 31200, 100);
+  }
+
+  // ─ 14. Advance tax — at ₹4.14L tax, schedule sums to total ─
+  {
+    const adv = computeAdvanceTax(413962);
+    expect('Advance tax triggered @ ₹4.14L tax', adv ? 1 : 0, 1);
+    if (adv) {
+      const total = adv.q1.amount + adv.q2.amount + adv.q3.amount + adv.q4.amount;
+      expect('Q1+Q2+Q3+Q4 sums to total', total, 413962);
+      expect('Q1 ≈ 15% of total', adv.q1.amount, Math.round(413962 * 0.15));
+    }
+  }
+
+  // ─ 15. Advance tax — below ₹10K × 1/0.9 ≈ ₹11,111 → returns null ─
+  expect('No advance tax @ ₹8K liability', computeAdvanceTax(8000) ? 1 : 0, 0);
+
   return cases;
 }
 
@@ -1228,8 +1787,13 @@ const state = {
   hraToggle: true,
   metroToggle: false,
   parentsSenior: true,
-  step: 0
+  step: 0,
+  // Live profile after a calculate() — what-if sliders mutate this and re-render.
+  currentProfile: null,
+  currentResult: { old: null, new: null, winner: null }
 };
+
+const STORAGE_KEY = 'finminos.taxRegimeSelector.v1';
 
 function setMode(m) {
   state.mode = m;
@@ -1242,7 +1806,7 @@ function setMode(m) {
   document.getElementById('result-section').style.display  = 'none';
   if (m === 'cold') {
     document.getElementById('hero-title').innerHTML = 'Plan next year\'s tax <em>before</em> it\'s too late.';
-    document.getElementById('hero-sub').textContent = 'Six steps. We model both regimes, surcharge, capital gains and rebate marginal relief — then show what specific actions would reduce your tax.';
+    document.getElementById('hero-sub').textContent = 'Five steps. We model both regimes, surcharge, capital gains and rebate marginal relief — then show what specific actions would reduce your tax.';
   } else {
     document.getElementById('hero-title').innerHTML = '<em>Welcome back, Ananya.</em> Let\'s plan FY 2026-27.';
     document.getElementById('hero-sub').textContent = 'Your AY 2025-26 ITR is loaded. Review last year\'s figures, project this year\'s changes, and we\'ll re-run both regimes.';
@@ -1272,8 +1836,8 @@ function goTo(n) {
   state.step = n;
   document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
   document.getElementById('step' + n).classList.add('active');
-  document.getElementById('progress-fraction').textContent = (n + 1) + ' / 4';
-  for (let i = 0; i < 4; i++) {
+  document.getElementById('progress-fraction').textContent = (n + 1) + ' / 5';
+  for (let i = 0; i < 5; i++) {
     const s = document.getElementById('ps' + i);
     s.classList.remove('active', 'done');
     if (i < n) s.classList.add('done');
@@ -1342,24 +1906,38 @@ function buildProfileFromForm() {
     mealVouchers:      v('in-meal'),
     mobileReimb:       v('in-mobile'),
     uniformAllowance:  v('in-uniform'),
-    // Capital gains heads — 0 in cold-start mode (added in step 5).
-    fdInterest: 0, savingsInterest: 0, stcgDebt: 0,
-    ltcgEquity: 0, stcgEquity: 0, ltcgDebt: 0, ltcgRealEstate: 0
+    fdInterest:      v('in-fd'),
+    savingsInterest: v('in-savings'),
+    stcgDebt:        0,
+    ltcgEquity:      v('in-ltcg-eq'),
+    stcgEquity:      v('in-stcg-eq'),
+    ltcgDebt:        v('in-ltcg-debt'),
+    ltcgRealEstate:  v('in-ltcg-re')
   };
 }
 
 function calculate() {
   const profile = buildProfileFromForm();
-  const oldR = computeRegimeTax(profile, 'old', RULES_AY_2025_26);
-  const newR = computeRegimeTax(profile, 'new', RULES_AY_2025_26);
-  renderResult(profile, oldR, newR);
+  runCalculation(profile);
 }
 
-function renderResult(profile, oldR, newR) {
+// Run engine + render full result page. Used by both cold-start and review flows
+// and by what-if slider re-runs.
+function runCalculation(profile, isWhatIf) {
+  const oldR = computeRegimeTax(profile, 'old', RULES_AY_2025_26);
+  const newR = computeRegimeTax(profile, 'new', RULES_AY_2025_26);
+  state.currentProfile = profile;
+  state.currentResult = { old: oldR, new: newR };
+  renderResult(profile, oldR, newR, isWhatIf);
+  if (!isWhatIf) saveState();
+}
+
+function renderResult(profile, oldR, newR, isWhatIf) {
   const oldTax = oldR.total, newTax = newR.total;
   const diff = Math.abs(oldTax - newTax);
   let winner = oldTax < newTax ? 'old' : 'new';
   if (diff < 10000) winner = 'close';
+  const winnerKey = winner === 'close' ? (oldTax <= newTax ? 'old' : 'new') : winner;
 
   const hero = document.getElementById('res-hero');
   hero.className = 'res-hero ' + winner;
@@ -1384,6 +1962,7 @@ function renderResult(profile, oldR, newR) {
     sav.textContent = 'Δ ' + fmtFull(diff);
     document.getElementById('res-note').textContent = 'Choose new regime for simpler compliance, or old if your deductions will grow this year.';
   }
+  state.currentResult.winner = winnerKey;
 
   document.getElementById('old-tax-display').textContent = fmtFull(oldTax);
   document.getElementById('new-tax-display').textContent = fmtFull(newTax);
@@ -1391,10 +1970,190 @@ function renderResult(profile, oldR, newR) {
   buildBreakdown(profile, oldR, 'brows-old', 'old');
   buildBreakdown(profile, newR, 'brows-new', 'new');
 
-  document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
-  document.getElementById('progress-wrap').style.display = 'none';
-  document.getElementById('result-section').style.display = 'block';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  // Advance tax — based on the winning regime's tax.
+  const winningResult = winnerKey === 'old' ? oldR : newR;
+  renderAdvanceTax(winningResult.total);
+
+  // Optimizer — opportunities for the winning regime.
+  renderOptimizer(profile, winnerKey, winningResult);
+
+  // What-if sliders — render once on first calc, then just keep them in sync.
+  if (!isWhatIf) renderWhatIf(profile);
+
+  if (!isWhatIf) {
+    document.querySelectorAll('.step').forEach(s => s.style.display = 'none');
+    document.getElementById('progress-wrap').style.display = 'none';
+    document.getElementById('review-section').style.display = 'none';
+    document.getElementById('result-section').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+}
+
+// ── Advance tax rendering ──
+function renderAdvanceTax(annualTax) {
+  const adv = computeAdvanceTax(annualTax);
+  const wrap = document.getElementById('adv-tax');
+  if (!adv) { wrap.style.display = 'none'; return; }
+  wrap.style.display = '';
+  document.getElementById('adv-tax-total').textContent = fmtFull(adv.total);
+  const html = ['q1', 'q2', 'q3', 'q4'].map((q, i) => {
+    const data = adv[q];
+    return '<div class="adv-tax-q">'
+      + '<div class="adv-tax-q-label">Q' + (i + 1) + ' &middot; ' + data.dueDate + '</div>'
+      + '<div class="adv-tax-q-val">' + fmtFull(data.amount) + '</div>'
+      + '<div class="adv-tax-q-date">cumulative ' + fmtFull(data.cumulative) + '</div>'
+      + '</div>';
+  }).join('');
+  document.getElementById('adv-tax-schedule').innerHTML = html;
+}
+
+// ── Optimizer / action list rendering ──
+function renderOptimizer(profile, regime, result) {
+  const opps = computeOpportunities(profile, regime, result, RULES_AY_2025_26);
+  const list = document.getElementById('opt-list');
+  const titleEl = document.getElementById('opt-title');
+
+  if (opps.length === 0) {
+    titleEl.textContent = 'No high-leverage opportunities found.';
+    list.innerHTML = '<div class="opt-empty">You\'re already using the major levers efficiently. A FinminOS expert can review edge cases (HRA structure tweaks, capital gains harvesting, family income splitting) for marginal additional savings.</div>';
+    return;
+  }
+  titleEl.innerHTML = 'Top opportunities for ' + (regime === 'old' ? 'old' : 'new') + ' regime &mdash; ranked by rupee impact at your marginal rate.';
+
+  list.innerHTML = opps.map(o => {
+    const tagHtml = o.ease === 'easy'
+      ? '<span class="opt-tag easy">Easy win</span>'
+      : '<span class="opt-tag struct">Structural</span>';
+    return '<div class="opt-item">'
+      + '<div class="opt-rank">' + String(o.rank).padStart(2, '0') + '</div>'
+      + '<div class="opt-body">'
+      +   '<div class="opt-body-title">' + o.title + '</div>'
+      +   '<div class="opt-body-caveat">' + tagHtml + '<span class="sec">' + o.sec + '</span>' + o.caveat + '</div>'
+      + '</div>'
+      + '<div class="opt-impact">'
+      +   '+' + fmt(Math.round(o.impact))
+      +   '<div class="opt-impact-sub">est. saving</div>'
+      + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ── What-if sliders ──
+const WHATIF_LEVERS = [
+  { id: 'wi-80c',     field: 's80c',             label: 'Section 80C investment',      sec: 'S.123',     min: 0, max: 150000, step: 5000 },
+  { id: 'wi-nps',     field: 'nps80ccd1b',       label: 'NPS Tier-1 (own)',            sec: 'S.124(3)',  min: 0, max: 50000,  step: 5000 },
+  { id: 'wi-hl',      field: 'homeLoanInterest', label: 'Home loan interest',          sec: 'S.22(2)(a)', min: 0, max: 200000, step: 5000 },
+  { id: 'wi-empnps',  field: 'employerNpsPct',   label: 'Employer NPS — % of basic',   sec: 'S.124(1)',  min: 0, max: 14,     step: 0.5, isPct: true },
+  { id: 'wi-80d-par', field: 's80dParents',      label: 'Health insurance — parents',  sec: 'S.126',     min: 0, max: 50000,  step: 5000 }
+];
+
+function renderWhatIf(profile) {
+  const html = WHATIF_LEVERS.map(l => {
+    const v = profile[l.field] || 0;
+    const valDisplay = l.isPct ? v + '%' : fmtFull(v);
+    return '<div class="whatif-row" data-lever="' + l.field + '">'
+      +   '<div class="whatif-row-meta">'
+      +     '<div class="whatif-row-label">' + l.label + ' <span class="sec">' + l.sec + '</span></div>'
+      +     '<div class="whatif-row-val" id="' + l.id + '-val">' + valDisplay + '</div>'
+      +   '</div>'
+      +   '<input type="range" class="whatif-slider" id="' + l.id + '" '
+      +     'min="' + l.min + '" max="' + l.max + '" step="' + l.step + '" value="' + v + '" '
+      +     'oninput="onWhatIf(\'' + l.field + '\', this.value, \'' + l.id + '\', ' + (l.isPct ? 'true' : 'false') + ')">'
+      + '</div>';
+  }).join('');
+  document.getElementById('whatif-rows').innerHTML = html;
+}
+
+let whatIfDebounce = null;
+function onWhatIf(field, value, sliderId, isPct) {
+  const v = +value;
+  state.currentProfile[field] = v;
+  document.getElementById(sliderId + '-val').textContent = isPct ? v + '%' : fmtFull(v);
+  // Debounce so dragging is smooth — re-run every 50ms at most.
+  clearTimeout(whatIfDebounce);
+  whatIfDebounce = setTimeout(() => {
+    runCalculation(state.currentProfile, true);
+  }, 50);
+}
+
+// ── Review-and-confirm mode ──
+function buildProfileFromMock(hikePct) {
+  const hike = (typeof hikePct === 'number' ? hikePct : 12) / 100;
+  const m = MOCK_PRIOR_YEAR_PROFILE;
+  return {
+    age: m.age,
+    gross:  Math.round(m.gross * (1 + hike)),
+    basic:  Math.round(m.basic * (1 + hike)),
+    hraReceived: Math.round(m.hraReceived * (1 + hike)),
+    rentPaid: m.rentPaid,                 // Rent doesn't auto-scale with salary.
+    isMetro: m.isMetro,
+    homeLoanInterest: m.homeLoanInterest,
+    s80c: m.s80c, nps80ccd1b: m.nps80ccd1b,
+    s80dSelf: m.s80dSelf, s80dSelfSenior: m.s80dSelfSenior,
+    s80dParents: m.s80dParents, s80dParentsSenior: m.s80dParentsSenior,
+    eduLoanInterest: m.eduLoanInterest,
+    employerNpsPct: m.employerNpsPct,
+    mealVouchers: m.mealVouchers, mobileReimb: m.mobileReimb, uniformAllowance: m.uniformAllowance,
+    fdInterest: m.fdInterest, savingsInterest: m.savingsInterest, stcgDebt: m.stcgDebt,
+    ltcgEquity: m.ltcgEquity, stcgEquity: m.stcgEquity, ltcgDebt: m.ltcgDebt, ltcgRealEstate: m.ltcgRealEstate
+  };
+}
+
+function calculateFromReview() {
+  const hike = +document.getElementById('rv-hike').value || 0;
+  const profile = buildProfileFromMock(hike);
+  runCalculation(profile);
+}
+
+function updateReviewProjections() {
+  const hike = +document.getElementById('rv-hike').value || 0;
+  const projected = Math.round(MOCK_PRIOR_YEAR_PROFILE.gross * (1 + hike / 100));
+  document.getElementById('rv-projected-gross').textContent = fmt(projected);
+}
+
+// ── localStorage persistence ──
+function saveState() {
+  if (!state.currentProfile) return;
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({
+      profile: state.currentProfile,
+      mode: state.mode,
+      savedAt: Date.now()
+    }));
+  } catch (e) { /* quota exceeded etc — silently no-op */ }
+}
+
+function loadSavedState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (e) { return null; }
+}
+
+function showResumeBanner(saved) {
+  const banner = document.getElementById('resume-banner');
+  const ageMs = Date.now() - (saved.savedAt || 0);
+  const ageStr = ageMs < 3600000
+    ? Math.round(ageMs / 60000) + ' min ago'
+    : ageMs < 86400000 ? Math.round(ageMs / 3600000) + ' hr ago'
+    : Math.round(ageMs / 86400000) + ' days ago';
+  document.getElementById('resume-meta').textContent =
+    'Last saved ' + ageStr + ' — ' + (saved.mode === 'review' ? 'review-and-confirm' : 'cold-start') + ' mode.';
+  banner.classList.add('show');
+}
+
+function resumeSaved() {
+  const saved = loadSavedState();
+  if (!saved) return;
+  document.getElementById('resume-banner').classList.remove('show');
+  if (saved.mode === 'review') setMode('review');
+  runCalculation(saved.profile);
+}
+
+function discardSaved() {
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  document.getElementById('resume-banner').classList.remove('show');
 }
 
 function buildBreakdown(profile, r, elId, regime) {
@@ -1411,10 +2170,21 @@ function buildBreakdown(profile, r, elId, regime) {
   } else {
     rows.push(['All other deductions', 'not available in new regime', false]);
   }
-  rows.push(['Net taxable income', fmtFull(r.taxableIncome), false]);
+  rows.push(['Net taxable income (slab portion)', fmtFull(r.taxableIncome), false]);
   rows.push(['Slab tax', fmtFull(r.slabTax), false]);
   if (r.rebate > 0) rows.push(['Rebate u/s 87A', '−' + fmtFull(r.rebate), true]);
   if (r.surcharge > 0) rows.push(['Surcharge (' + fmtPct(r.surchargeRate) + (r.surchargeReliefApplied ? ', marginal relief applied' : '') + ')', '+' + fmtFull(r.surcharge), false]);
+
+  // Capital gains rows (only if any).
+  const cg = r.capitalGains;
+  if (cg && cg.total > 0) {
+    if (cg.ltcgEqTax > 0) rows.push(['LTCG equity tax (12.5%) ' + sec('S.112A'), '+' + fmtFull(cg.ltcgEqTax), false]);
+    if (cg.stcgEqTax > 0) rows.push(['STCG equity tax (20%) ' + sec('S.111A'), '+' + fmtFull(cg.stcgEqTax), false]);
+    if (cg.ltcgDebtTax > 0) rows.push(['LTCG debt tax (12.5%) ' + sec('S.112'), '+' + fmtFull(cg.ltcgDebtTax), false]);
+    if (cg.ltcgReTax > 0) rows.push(['LTCG real-estate tax (12.5%) ' + sec('S.112'), '+' + fmtFull(cg.ltcgReTax), false]);
+    if (cg.surcharge > 0) rows.push(['Surcharge on CG tax (' + fmtPct(cg.surchargeRate) + ', capped at 15%)', '+' + fmtFull(cg.surcharge), false]);
+  }
+
   rows.push(['Health & Education cess (4%)', '+' + fmtFull(r.cess), false]);
   rows.push(['Total tax payable', fmtFull(r.total), false]);
 
@@ -1426,10 +2196,18 @@ function buildBreakdown(profile, r, elId, regime) {
 function sec(s) { return '<span class="sec">' + s + '</span>'; }
 
 function restart() {
-  document.querySelectorAll('.step').forEach(s => { s.style.display = ''; s.classList.remove('active'); });
-  document.getElementById('progress-wrap').style.display = '';
+  if (state.mode === 'cold') {
+    document.querySelectorAll('#cold-section .step').forEach(s => { s.style.display = ''; s.classList.remove('active'); });
+    document.getElementById('progress-wrap').style.display = '';
+    document.getElementById('cold-section').style.display = '';
+    document.getElementById('review-section').style.display = 'none';
+    goTo(0);
+  } else {
+    document.getElementById('cold-section').style.display = 'none';
+    document.getElementById('review-section').style.display = '';
+  }
   document.getElementById('result-section').style.display = 'none';
-  goTo(0);
+  window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ════════════════════════════════════════════════════════════════════
@@ -1450,7 +2228,6 @@ window.addEventListener('DOMContentLoaded', () => {
   bindLiveDisplays();
   const tests = runEngineTests();
   renderTestPanel(tests);
-  // Also log to console for engineers in dev tools.
   console.group('FinminOS engine self-test (AY 2025-26)');
   tests.forEach(c => {
     console[c.pass ? 'log' : 'error'](
@@ -1459,6 +2236,13 @@ window.addEventListener('DOMContentLoaded', () => {
     );
   });
   console.groupEnd();
+
+  // Resume banner — only show if a saved profile exists.
+  const saved = loadSavedState();
+  if (saved && saved.profile) showResumeBanner(saved);
+
+  // Initialize the projected-gross display in review mode.
+  updateReviewProjections();
 });
 </script>
 </body>
