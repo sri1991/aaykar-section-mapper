@@ -394,27 +394,6 @@ input[type=range]:hover::-webkit-slider-thumb { transform: scale(1.18); }
 }
 .btn-restart:hover { background: var(--surface-2); color: var(--ink); }
 
-/* DEV / TEST PANEL */
-.test-panel {
-  margin-top: 28px;
-  background: #1a1714;
-  color: #d4d4d4;
-  border-radius: var(--r-md);
-  padding: 16px 18px;
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  line-height: 1.55;
-}
-.test-panel-title {
-  font-family: var(--font-body);
-  font-size: 11px; font-weight: 800;
-  letter-spacing: 0.10em; text-transform: uppercase;
-  color: #FFD96A;
-  margin-bottom: 12px;
-}
-.test-pass { color: #6ed98a; }
-.test-fail { color: #ff8a8a; }
-
 /* FOOTER */
 .site-footer {
   background: var(--green);
@@ -1111,11 +1090,6 @@ input[type=range].whatif-slider { background: var(--border); }
     <button class="btn-restart" onclick="restart()">← Recalculate with different inputs</button>
   </div>
 
-  <!-- DEV TEST PANEL -->
-  <div class="test-panel" id="test-panel">
-    <div class="test-panel-title">Engine self-test (visible during prototype walkthrough)</div>
-    <div id="test-output">running…</div>
-  </div>
 
 </div><!-- end .page -->
 
@@ -2249,21 +2223,9 @@ function restart() {
 // ════════════════════════════════════════════════════════════════════
 // SECTION 6 — INIT
 // ════════════════════════════════════════════════════════════════════
-function renderTestPanel(cases) {
-  const el = document.getElementById('test-output');
-  const lines = cases.map(c => {
-    const mark = c.pass ? '<span class="test-pass">✓</span>' : '<span class="test-fail">✗</span>';
-    return mark + ' ' + c.label + (c.pass ? '' : '  →  got ' + c.actual + ', expected ' + c.expected);
-  });
-  const passCount = cases.filter(c => c.pass).length;
-  lines.unshift('<span class="test-pass">' + passCount + '/' + cases.length + ' tests passed</span>');
-  el.innerHTML = lines.join('<br>');
-}
-
 window.addEventListener('DOMContentLoaded', () => {
   bindLiveDisplays();
   const tests = runEngineTests();
-  renderTestPanel(tests);
   console.group('FinminOS engine self-test (FY 2026-27)');
   tests.forEach(c => {
     console[c.pass ? 'log' : 'error'](
