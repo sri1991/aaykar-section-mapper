@@ -670,11 +670,14 @@ input[type=range].whatif-slider { background: var(--border); }
     <div class="review-card">
       <div class="review-card-header">
         <div class="review-card-title">HRA &amp; rent</div>
-        <div class="review-card-tag">Hyderabad &middot; non-metro</div>
+        <div class="review-card-tag">Hyderabad</div>
       </div>
       <div class="review-grid">
         <div class="review-li"><span class="review-li-label">HRA received</span><span class="review-li-val" id="rv-hra">&#8377;5,60,000</span></div>
         <div class="review-li"><span class="review-li-label">Rent paid</span><span class="review-li-val" id="rv-rent">&#8377;4,80,000</span></div>
+      </div>
+      <div class="review-projection">
+        <span><b>Status change:</b> Hyderabad was non-metro (40%) for AY 2025-26. Under Draft IT Rules 2026, Rule 279, it qualifies as metro (50%) from FY 2026-27 &mdash; we'll apply the new rate in the projection. Pending final notification.</span>
       </div>
     </div>
 
@@ -821,10 +824,12 @@ input[type=range].whatif-slider { background: var(--border); }
             <div class="field" style="margin-bottom:0">
               <label class="field-label">Is your rented home in a metro city?</label>
               <div class="toggle-row">
-                <button class="toggle-pill" id="metro-yes" onclick="setToggle('metro', true)">Metro (Delhi, Mumbai, Chennai, Kolkata)</button>
+                <button class="toggle-pill" id="metro-yes" onclick="setToggle('metro', true)">Metro (8 cities)</button>
                 <button class="toggle-pill on" id="metro-no" onclick="setToggle('metro', false)">Non-metro</button>
               </div>
-              <div class="field-hint">Metro: HRA exemption uses 50% of basic. Non-metro: 40% of basic.</div>
+              <div class="field-hint">
+                Metro &mdash; <b>50% of basic</b> &mdash; Delhi, Mumbai, Chennai, Kolkata, <b>Bengaluru, Hyderabad, Pune, Ahmedabad</b>. The four bolded cities are newly added by Rule 279 of the Draft IT Rules 2026 from FY 2026-27 (still draft &mdash; pending final notification). Non-metro: 40% of basic.
+              </div>
             </div>
           </div>
         </div>
@@ -1101,7 +1106,7 @@ input[type=range].whatif-slider { background: var(--border); }
 
     <div class="disclaimer">
       <b>Heads up &mdash; regime choice timing.</b> Telling your employer which regime to use is provisional and only affects TDS. Your final regime choice is locked when you file your ITR (typically Jun-Jul 2027). Salaried taxpayers without business income can switch regimes year-on-year; business/professional taxpayers face lock-in restrictions (Section 202, IT Act 2025).<br><br>
-      <b>Indicative estimate.</b> Rental income, business/professional income and full perquisite valuation rules are not yet modelled. Capital gains use post-23-Jul-2024 rates (12.5% LTCG / 20% STCG equity); the indexation alternative for real estate is not modelled. Senior-citizen old-regime slabs are historical values pending FY 26-27 verification (EY source covers below-60 only). Section number references (S.123, S.126, etc.) need cross-walking against the gazetted Income Tax Act 2025 text. Need help with edge cases? <a href="#" style="color:var(--green);font-weight:700;">Talk to a FinminOS expert</a>.
+      <b>Indicative estimate.</b> Rental income, business/professional income and full perquisite valuation rules are not yet modelled. Capital gains use post-23-Jul-2024 rates (12.5% LTCG / 20% STCG equity); the indexation alternative for real estate is not modelled. Senior-citizen old-regime slabs are historical values pending FY 26-27 verification (EY source covers below-60 only). HRA metro list now includes <b>Bengaluru, Hyderabad, Pune, Ahmedabad</b> per Rule 279 of the <b>Draft Income Tax Rules 2026</b> &mdash; this is a draft amendment and not yet finally notified; figures will be re-verified once the gazette notification issues. Section number references (S.123, S.126, etc.) need cross-walking against the gazetted Income Tax Act 2025 text. Need help with edge cases? <a href="#" style="color:var(--green);font-weight:700;">Talk to a FinminOS expert</a>.
     </div>
     <button class="btn-restart" onclick="restart()">← Recalculate with different inputs</button>
   </div>
@@ -1195,6 +1200,13 @@ const RULES_AY_2026_27 = {
     surchargeCap:   0.15  // Surcharge on listed-equity CG capped at 15%.
   },
   cess: 0.04,
+  // HRA metro list — Rule 279 of Draft Income Tax Rules 2026 (still draft, not
+  // finally notified as of May 2026). Adds Bengaluru, Hyderabad, Pune, Ahmedabad
+  // to the historical four. Applicable from 1 Apr 2026 (FY 2026-27).
+  // Sources: Cleartax (cleartax.in/s/draft-income-tax-rules), Deccan Herald,
+  // Upstox, Angel One — all citing Rule 279.
+  hraMetroCities: ['Delhi', 'Mumbai', 'Chennai', 'Kolkata', 'Bengaluru', 'Hyderabad', 'Pune', 'Ahmedabad'],
+  hraMetroSource: 'Draft IT Rules 2026, Rule 279 (pending final notification)',
   sections: {
     'S.19':       { legacy: 'Std deduction', regimes: ['old','new'] },
     'S.123':      { legacy: '80C',           limit: 150000, regimes: ['old'] },
@@ -1213,8 +1225,13 @@ const MOCK_PRIOR_YEAR_PROFILE = {
   name: 'Ananya Sharma',
   filingYear: 'AY 2025-26',
   age: 'below60',
+  city: 'Hyderabad',
   gross: 2800000, basic: 1120000,
-  hraReceived: 560000, rentPaid: 480000, isMetro: false,
+  hraReceived: 560000, rentPaid: 480000,
+  // isMetro=false reflects the AY 2025-26 4-city rule under which she filed.
+  // For FY 26-27 projections, buildProfileFromMock() recomputes against the
+  // 8-city draft rule via isMetroCity(m.city, RULES_AY_2026_27).
+  isMetro: false,
   homeLoanInterest: 0,
   s80c: 150000, nps80ccd1b: 50000,
   s80dSelf: 25000, s80dSelfSenior: false,
@@ -1328,6 +1345,14 @@ function applyCapitalGainsTax(profile, cgRules) {
     ltcgEqTax, stcgEqTax, ltcgDebtTax, ltcgReTax,
     total: ltcgEqTax + stcgEqTax + ltcgDebtTax + ltcgReTax
   };
+}
+
+// City-name → metro classification for HRA, per the configured rules.
+// Case-insensitive match. Returns true if the city qualifies for 50% HRA exemption.
+function isMetroCity(cityName, rules) {
+  if (!cityName) return false;
+  const lower = String(cityName).trim().toLowerCase();
+  return rules.hraMetroCities.some(c => c.toLowerCase() === lower);
 }
 
 // Compute taxable income and full tax for a given regime.
@@ -1776,6 +1801,12 @@ function runEngineTests() {
   }
   expect('No advance tax @ ₹8K liability', computeAdvanceTax(8000) ? 1 : 0, 0);
 
+  // ─ HRA metro list — Draft IT Rules 2026, Rule 279 (8-city expansion) ─
+  expect('Hyderabad is metro under FY 26-27 draft rules', isMetroCity('Hyderabad', R) ? 1 : 0, 1);
+  expect('Bengaluru is metro under FY 26-27 draft rules', isMetroCity('bengaluru', R) ? 1 : 0, 1);
+  expect('Mumbai still metro (carried over)',             isMetroCity('Mumbai', R) ? 1 : 0, 1);
+  expect('Jaipur is non-metro',                            isMetroCity('Jaipur', R) ? 1 : 0, 0);
+
   return cases;
 }
 
@@ -2081,13 +2112,17 @@ function onWhatIf(field, value, sliderId, isPct) {
 function buildProfileFromMock(hikePct) {
   const hike = (typeof hikePct === 'number' ? hikePct : 12) / 100;
   const m = MOCK_PRIOR_YEAR_PROFILE;
+  // Under Draft IT Rules 2026 (Rule 279), Hyderabad is reclassified as metro
+  // for FY 2026-27. The mock profile's prior-year isMetro=false reflects the
+  // old 4-city rule under which she filed AY 2025-26.
+  const projectedIsMetro = isMetroCity(m.city, RULES_AY_2026_27);
   return {
     age: m.age,
     gross:  Math.round(m.gross * (1 + hike)),
     basic:  Math.round(m.basic * (1 + hike)),
     hraReceived: Math.round(m.hraReceived * (1 + hike)),
     rentPaid: m.rentPaid,                 // Rent doesn't auto-scale with salary.
-    isMetro: m.isMetro,
+    isMetro: projectedIsMetro,
     homeLoanInterest: m.homeLoanInterest,
     s80c: m.s80c, nps80ccd1b: m.nps80ccd1b,
     s80dSelf: m.s80dSelf, s80dSelfSenior: m.s80dSelfSenior,
