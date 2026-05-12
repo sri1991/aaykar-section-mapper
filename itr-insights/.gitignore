@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+.env
+.env.local
+*.egg-info/
+.DS_Store
+backend/tests/fixtures/*.pdf
+!backend/tests/fixtures/.gitkeep
